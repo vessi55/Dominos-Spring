@@ -9,11 +9,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserLogInDTO {
 
-    private String username;
+    private String email;
     private String password;
 
-    public UserLogInDTO(String username, String password) {
-        this.username = username;
+    public UserLogInDTO(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 

@@ -1,22 +1,16 @@
-package dominos_project.demo.model.user;
+package dominos.demo.model.daos;
 
+import dominos.demo.model.repositories.UserRepository;
+import dominos.demo.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
-
-import java.sql.PreparedStatement;
-import java.util.List;
 
 @Component
 public class UserDao {
-
     @Autowired
     private UserRepository userRepository;
 
-    public void register(User user){
+    public void registerUser(User user){
         userRepository.save(user);
     }
     public User getUserByEmail(String email){
@@ -25,8 +19,4 @@ public class UserDao {
     public User getUserByEmailAndPassword(String email, String password){
         return userRepository.findByEmailAndPassword(email, password);
     }
-
-
-
-
 }
