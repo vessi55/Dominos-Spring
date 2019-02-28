@@ -5,12 +5,10 @@ import dominos.demo.model.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-@Entity
 public class ProductDao {
     @Autowired
     ProductRepository productRepository;
