@@ -11,8 +11,7 @@ import util.exceptions.InvalidLogInException;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
-
-public abstract class BaseController {
+public class BaseController {
 
     //@ExceptionHandler({NotLoggedInException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
