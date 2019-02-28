@@ -1,19 +1,35 @@
 package dominos.demo.controller;
 
 
+import dominos.demo.util.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import dominos.demo.util.exceptions.BaseException;
-import dominos.demo.util.exceptions.ErrorMsg;
 
 import java.time.LocalDateTime;
 
+@RequestMapping(produces = "application/json")
 public class BaseController {
 
-    //@ExceptionHandler({NotLoggedInException.class})
+    @ExceptionHandler({InvalidRegistrationException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-    public ErrorMsg handleNotLogged(Exception e) {
+    public ErrorMsg handleRegisterErrors(Exception e) {
+        ErrorMsg msg = new ErrorMsg(e.getMessage(), HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
+        return msg;
+    }
+
+    @ExceptionHandler({InvalidLogInException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ErrorMsg handleLogInErrors(Exception e) {
+        ErrorMsg msg = new ErrorMsg(e.getMessage(), HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
+        return msg;
+    }
+
+    @ExceptionHandler({InvalidLogOutException.class})
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ErrorMsg handleLogOutErrors(Exception e) {
         ErrorMsg msg = new ErrorMsg(e.getMessage(), HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
         return msg;
     }
