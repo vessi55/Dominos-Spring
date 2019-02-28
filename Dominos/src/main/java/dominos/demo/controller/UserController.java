@@ -1,18 +1,20 @@
-package controller;
+package dominos.demo.controller;
 
 
+import dominos.demo.model.DTOs.LoginResponseUserDTO;
+import dominos.demo.model.DTOs.UserLogInDTO;
+import dominos.demo.model.DTOs.UserRegisterDTO;
 import dominos.demo.model.daos.UserDao;
-import dominos.demo.model.DTOs.*;
 import dominos.demo.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import util.exceptions.BaseException;
-import util.exceptions.InvalidLogInException;
-import util.exceptions.InvalidLogOutException;
-import util.exceptions.InvalidRegistrationException;
+import dominos.demo.util.exceptions.BaseException;
+import dominos.demo.util.exceptions.InvalidLogInException;
+import dominos.demo.util.exceptions.InvalidLogOutException;
+import dominos.demo.util.exceptions.InvalidRegistrationException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;

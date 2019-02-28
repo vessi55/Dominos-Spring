@@ -1,4 +1,4 @@
-package dominos.demo.model;
+package dominos.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

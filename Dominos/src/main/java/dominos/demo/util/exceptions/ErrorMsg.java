@@ -1,4 +1,4 @@
-package util.exceptions;
+package dominos.demo.util.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

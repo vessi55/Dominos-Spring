@@ -1,6 +1,6 @@
-package controller;
+package dominos.demo.controller;
 import dominos.demo.model.users.User;
-import util.exceptions.InvalidLogInException;
+import dominos.demo.util.exceptions.InvalidLogInException;
 
 import javax.servlet.http.HttpSession;
 

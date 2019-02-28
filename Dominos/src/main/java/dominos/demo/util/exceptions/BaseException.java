@@ -1,4 +1,4 @@
-package util.exceptions;
+package dominos.demo.util.exceptions;
 
 public class BaseException extends Exception {
     public BaseException(String message) {
