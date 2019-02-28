@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import util.exceptions.BaseException;
 import util.exceptions.ErrorMsg;
-import util.exceptions.InvalidLogInException;
 
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
 public class BaseController {
@@ -32,11 +30,6 @@ public class BaseController {
     public ErrorMsg handleOtherErrors(Exception e) {
         ErrorMsg msg = new ErrorMsg(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), LocalDateTime.now());
         return msg;
-    }
-    protected void validateLogin(HttpSession session) throws InvalidLogInException {
-        if(session.getAttribute("loggedUser") == null){
-            throw new InvalidLogInException("You are not logged! Please log in to continue!");
-        }
     }
 
 }
