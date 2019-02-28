@@ -2,15 +2,13 @@ package dominos.demo.controller;
 
 
 import dominos.demo.model.DTOs.LoginResponseUserDTO;
+import dominos.demo.model.DTOs.UserEditDTO;
 import dominos.demo.model.DTOs.UserLogInDTO;
 import dominos.demo.model.DTOs.UserRegisterDTO;
 import dominos.demo.model.daos.UserDao;
 import dominos.demo.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.InvalidLogOutException;
@@ -30,25 +28,6 @@ public class UserController extends BaseController {
     @Autowired
     private UserDao userDao;
 
-
-//    @PostMapping(value = "/register")
-//    public User register(@RequestBody RegisterUserDTO regUser, HttpServletResponse response, HttpSession session) throws Exception {
-//        String first_name = regUser.getFirst_name();
-//        String last_name = regUser.getLast_name();
-//        String email = regUser.getEmail();
-//        String pass1 = regUser.getPassword();
-//        String pass2 = regUser.getPassword2();
-//
-//        User user = new User(first_name, last_name,email,pass1,pass2);
-//        if (registerValidation(regUser)) {
-//            userDao.register(user);
-//            //SessionManager.logUser(session, user);
-//        } else {
-//            response.setStatus(400);
-//            throw new InvalidRegistrationException("Problem with registration!");
-//        }
-//        return user;
-//    }
     @PostMapping(value = "/register")
     public User register(@RequestBody UserRegisterDTO regUser, HttpServletResponse response, HttpSession session) throws BaseException {
         User user = null;
@@ -81,15 +60,21 @@ public class UserController extends BaseController {
         throw new InvalidLogInException("You are already logged!");
     }
 
-    @GetMapping(value = "/logout")
+    @PostMapping(value = "/logout")
     public void logout(HttpSession session,HttpServletResponse response) throws Exception {
-        if (SessionManager.isLoggedIn(session)) {
-            session.invalidate();
-            response.getWriter().append("You logged out successfully!");
-        }
-        throw new InvalidLogOutException("You are already logged out!");
+        SessionManager.isLoggedIn(session);
+        session.invalidate();
+        response.getWriter().append("You logged out successfully!");
+
     }
 
+    @PutMapping(value = "/edit")
+    public String editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
+        SessionManager.isLoggedIn(session);
+        User user = (User)session.getAttribute(SessionManager.LOGGED);
+        userDao.updateUser(editUser, user);
+        return "User successfully updated!";
+    }
 
     private boolean validateLogIn(UserLogInDTO user) throws InvalidLogInException {
         String email = user.getEmail();
@@ -138,7 +123,7 @@ public class UserController extends BaseController {
         }
         return true;
     }
-    public boolean validPassword(String password) throws InvalidRegistrationException {
+    public static boolean validPassword(String password) throws InvalidRegistrationException {
         /*
 ^                 # start-of-string
 (?=.*[0-9])       # a digit must occur at least once
@@ -159,7 +144,7 @@ $                 # end-of-string
         }
         return true;
     }
-    public boolean validEmailAddress(String email) throws InvalidRegistrationException {
+    public static boolean validEmailAddress(String email) throws InvalidRegistrationException {
         //String regex = "^(.+)@(.+)$";
         /*
  [A-Z0-9._%+-]+ - the first part of mail address may contain all characters, numbers, points, underscores, percent, plus and minus.
@@ -169,7 +154,7 @@ $                 # end-of-string
 [A-Z]{2,4} - the domain name may contain all characters. The number of characters is limited between 2 and 4.
         */
 
-        String regex = "[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,4}\n";
+        String regex = "^(.+)@(.+)$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         if(!matcher.matches()) {

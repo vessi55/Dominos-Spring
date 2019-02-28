@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 
 public class SessionManager {
 
-    private static final String LOGGED = "logged";
+    public static final String LOGGED = "logged";
 
     public static boolean isLoggedIn(HttpSession session) throws InvalidLogInException {
         if(session.isNew() || session.getAttribute(LOGGED) == null) {
