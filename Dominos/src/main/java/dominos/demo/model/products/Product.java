@@ -1,15 +1,23 @@
-package dominos.demo.model.products;
+//package dominos.demo.model.products;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public abstract class Product {
-    protected long id;
-    protected String name;
-    protected double price;
-    //private String image;
-}
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@Entity
+//public abstract class Product {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    protected long id;
+//    protected String name;
+//    protected double price;
+//    //private String image;
+//}

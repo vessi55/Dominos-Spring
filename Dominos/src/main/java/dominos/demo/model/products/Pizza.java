@@ -6,16 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Pizza extends Product {
+@Entity
+@Table(name = "pizzas")
+public class Pizza {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+    protected String name;
     private String description;
-    private double weight;
+    protected double price;
     private Size size;
-    private Set<Ingredients> ingredients;
+    private double weight;
     private String image_url;
-
-
 }
