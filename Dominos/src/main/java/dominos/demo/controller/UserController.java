@@ -1,21 +1,19 @@
 package dominos.demo.controller;
 
 
-import dominos.demo.model.DTOs.LoginResponseUserDTO;
-import dominos.demo.model.DTOs.UserEditDTO;
-import dominos.demo.model.DTOs.UserLogInDTO;
-import dominos.demo.model.DTOs.UserRegisterDTO;
+import dominos.demo.model.DTOs.*;
 import dominos.demo.model.daos.UserDao;
 import dominos.demo.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
-import dominos.demo.util.exceptions.InvalidLogOutException;
 import dominos.demo.util.exceptions.InvalidRegistrationException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,9 +27,9 @@ public class UserController extends BaseController {
     private UserDao userDao;
 
     @PostMapping(value = "/register")
-    public User register(@RequestBody UserRegisterDTO regUser, HttpServletResponse response, HttpSession session) throws BaseException {
+    public UserResponseDTO register(@RequestBody UserRegisterDTO regUser, HttpSession session) throws BaseException {
         User user = null;
-        if (registerValidation(regUser)) {
+        if (validateRegistration(regUser)) {
             user = new User();
             user.setFirst_name(regUser.getFirst_name());
             user.setLast_name(regUser.getLast_name());
@@ -40,12 +38,12 @@ public class UserController extends BaseController {
             userDao.registerUser(user);
             //SessionManager.logUser(session,user);
         }
-        return user;
+        return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
+                user.getEmail(), new Date());
     }
 
-
     @PostMapping(value = "/login")
-    public LoginResponseUserDTO loginUser(@RequestBody UserLogInDTO login, HttpSession session) throws InvalidLogInException {
+    public UserResponseDTO loginUser(@RequestBody UserLogInDTO login, HttpSession session) throws InvalidLogInException {
         if(!(SessionManager.isLoggedIn(session))&& validateLogIn(login)){
             String email = login.getEmail();
             String password = login.getPassword();
@@ -54,75 +52,69 @@ public class UserController extends BaseController {
                 throw new InvalidLogInException("User with this email does not exist!");
             }
             SessionManager.logUser(session, user);
-            return new LoginResponseUserDTO(user.getFirst_name(), user.getLast_name(),
+            return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
                     user.getEmail(), new Date());
         }
         throw new InvalidLogInException("You are already logged!");
     }
 
     @PostMapping(value = "/logout")
-    public void logout(HttpSession session,HttpServletResponse response) throws Exception {
+    public void logout(HttpSession session, HttpServletResponse response) throws Exception {
         SessionManager.isLoggedIn(session);
         session.invalidate();
         response.getWriter().append("You logged out successfully!");
-
     }
 
-    @PutMapping(value = "/edit")
-    public String editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
-        SessionManager.isLoggedIn(session);
-        User user = (User)session.getAttribute(SessionManager.LOGGED);
-        userDao.updateUser(editUser, user);
-        return "User successfully updated!";
+    @PutMapping(value = "/editProfile")
+    public ResponseDTO editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
+        if(SessionManager.isLoggedIn(session)) {
+            User user = (User) session.getAttribute(SessionManager.LOGGED);
+            userDao.updateUser(editUser, user);
+            return new ResponseDTO("User successfully updated! ", LocalDateTime.now());
+        }
+        throw new InvalidLogInException("Please log in to edit your profile!");
     }
+
+    @DeleteMapping(value = "/deleteProfile/{id}")
+    public ResponseDTO deleteProfile(@PathVariable ("id") long idParam, User user, HttpSession session) throws Exception {
+        userDao.deleteUser(idParam, session);
+        return new ResponseDTO("User successfully deleted! ", LocalDateTime.now());
+    }
+
 
     private boolean validateLogIn(UserLogInDTO user) throws InvalidLogInException {
         String email = user.getEmail();
         String password = user.getPassword();
-        if (email == null || email.isEmpty()||password == null || password.isEmpty()) {
-            throw new InvalidLogInException("Invalid input!Please, try again!");
+        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+            throw new InvalidLogInException("Invalid input! Please, try again!");
         }
         return true;
     }
-    public boolean registerValidation(UserRegisterDTO user) throws InvalidRegistrationException {
-        if(!checkForEmptyAndNullValue(user) || !validEmailAddress(user.getEmail()) ||!validPassword(user.getPassword())
-            || !checkIfPasswordsMatching(user) || !checkIfEmailExists(user)){
+
+    private boolean validateRegistration(UserRegisterDTO user) throws InvalidRegistrationException {
+        if(user.getFirst_name().isEmpty() || user.getFirst_name() == null
+                || user.getLast_name().isEmpty() || user.getLast_name() == null
+                || !validEmailAddress(user.getEmail()) ||!validPassword(user.getPassword())
+                || !checkIfPasswordsMatching(user) || !checkIfEmailExists(user)){
             throw new InvalidRegistrationException("Invalid input");
         }
         return true;
     }
 
-
-    public boolean checkIfEmailExists(UserRegisterDTO user) throws InvalidRegistrationException{
+    private boolean checkIfEmailExists(UserRegisterDTO user) throws InvalidRegistrationException{
         if (userDao.getUserByEmail(user.getEmail()) != null) {
-            throw new InvalidRegistrationException("Email already exists!");
+            throw new InvalidRegistrationException("User with this email already exists!");
         }
         return true;
     }
 
-    public boolean checkForEmptyAndNullValue(UserRegisterDTO user) throws InvalidRegistrationException {
-        String pass1 = user.getPassword().trim();
-        String pass2 = user.getPassword2().trim();
-        String first_name = user.getFirst_name();
-        String last_name = user.getLast_name();
-        String email =  user.getEmail();
-        if(first_name.isEmpty() || first_name == null ||
-                last_name.isEmpty() || last_name == null ||
-                email.isEmpty() || email == null) {
-            throw new InvalidRegistrationException("Your first name, last name and email MUST NOT be empty!");
-        }
-        else if(pass1.isEmpty() || pass1 == null ||
-                pass2.isEmpty() ||pass2 == null){
-            throw  new InvalidRegistrationException("Password MUST not be empty!");
-        }
-        return true;
-    }
-    public boolean checkIfPasswordsMatching(UserRegisterDTO user)throws InvalidRegistrationException {
+    private boolean checkIfPasswordsMatching(UserRegisterDTO user)throws InvalidRegistrationException {
         if (!(user.getPassword().equals(user.getPassword2()))) {
             throw new InvalidRegistrationException("Passwords MUST be matching");
         }
         return true;
     }
+
     public static boolean validPassword(String password) throws InvalidRegistrationException {
         /*
 ^                 # start-of-string
@@ -134,7 +126,7 @@ public class UserController extends BaseController {
 .{8,}             # anything, at least eight places though
 $                 # end-of-string
         */
-        String pass = ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
+        String pass = ("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$");
         Pattern pattern = Pattern.compile(pass);
         Matcher matcher = pattern.matcher(password);
         if(!matcher.matches()) {
@@ -144,6 +136,7 @@ $                 # end-of-string
         }
         return true;
     }
+
     public static boolean validEmailAddress(String email) throws InvalidRegistrationException {
         //String regex = "^(.+)@(.+)$";
         /*

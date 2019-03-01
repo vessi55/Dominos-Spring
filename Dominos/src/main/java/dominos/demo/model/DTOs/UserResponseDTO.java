@@ -9,13 +9,13 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LoginResponseUserDTO {
+public class UserResponseDTO {
     private String firstName;
     private String lastName;
     private String email;
     private Date date;
 
-    public LoginResponseUserDTO(String firstName, String lastName, String email, Date date) {
+    public UserResponseDTO(String firstName, String lastName, String email, Date date) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

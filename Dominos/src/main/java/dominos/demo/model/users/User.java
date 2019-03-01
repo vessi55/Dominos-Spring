@@ -21,16 +21,18 @@ public class User {
     private String last_name;
     private String email;
     private String password;
+    private boolean isAdmin;
     private String phone;
     private String city;
     private String street;
     //private Set<Order> myOrders;
 
-    public User(String first_name, String last_name, String email, String password, String phone, String city, String street) {
+    public User(String first_name, String last_name, String email, String password, boolean isAdmin, String phone, String city, String street) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.password = password;
+        this.isAdmin = isAdmin;
         this.phone = phone;
         this.city = city;
         this.street = street;
