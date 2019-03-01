@@ -2,7 +2,6 @@ package dominos.demo.model.orders;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import dominos.demo.model.products.Product;
 import dominos.demo.model.restaurants.Restaurant;
 import dominos.demo.model.users.User;
 
@@ -21,7 +20,7 @@ public class Order {
     private LocalDateTime delivery_time;
     private String status; // TODO : could be enum or private boolean isDelivered
     private User user;
-    private Map<Product, Integer> products; // product ->quantity
+    //private Map<Product, Integer> products; // product ->quantity
     private Restaurant restaurant;
     private float price;
 

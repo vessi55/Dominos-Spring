@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ResponseDTO {
+public class CommonResponseDTO {
 
     private String msg;
     private LocalDateTime date;
