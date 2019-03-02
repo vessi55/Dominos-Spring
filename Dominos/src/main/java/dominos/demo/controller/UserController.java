@@ -3,6 +3,7 @@ package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.*;
 import dominos.demo.model.daos.UserDao;
+import dominos.demo.model.repositories.UserRepository;
 import dominos.demo.model.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +11,7 @@ import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.InvalidRegistrationException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -25,6 +24,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping(value = "/register")
     public UserResponseDTO register(@RequestBody UserRegisterDTO regUser, HttpSession session) throws BaseException {
@@ -55,30 +57,42 @@ public class UserController extends BaseController {
             return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
                     user.getEmail(), new Date());
         }
-        throw new InvalidLogInException("You are already logged!");
+        throw new InvalidLogInException("You are already logged in!");
     }
 
     @PostMapping(value = "/logout")
-    public void logout(HttpSession session, HttpServletResponse response) throws Exception {
-        SessionManager.isLoggedIn(session);
-        session.invalidate();
-        response.getWriter().append("You logged out successfully!");
+    public CommonResponseDTO logout(HttpSession session) throws Exception {
+        if(SessionManager.isLoggedIn(session)) {
+            session.invalidate();
+            return new CommonResponseDTO("You logged out successfully!", LocalDateTime.now());
+        }
+        throw new InvalidLogInException("You are already logged out");
     }
 
     @PutMapping(value = "/editProfile")
-    public ResponseDTO editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
+    public CommonResponseDTO editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
         if(SessionManager.isLoggedIn(session)) {
             User user = (User) session.getAttribute(SessionManager.LOGGED);
             userDao.updateUser(editUser, user);
-            return new ResponseDTO("User successfully updated! ", LocalDateTime.now());
+            return new CommonResponseDTO("User successfully updated! ", LocalDateTime.now());
         }
         throw new InvalidLogInException("Please log in to edit your profile!");
     }
 
     @DeleteMapping(value = "/deleteProfile/{id}")
-    public ResponseDTO deleteProfile(@PathVariable ("id") long idParam, User user, HttpSession session) throws Exception {
-        userDao.deleteUser(idParam, session);
-        return new ResponseDTO("User successfully deleted! ", LocalDateTime.now());
+    public CommonResponseDTO deleteProfile(@PathVariable ("id") long idParam, HttpSession session) throws Exception {
+        if(SessionManager.isLoggedIn(session)) {
+            User user = (User) session.getAttribute(SessionManager.LOGGED);
+            if (user.getId() == idParam) {
+                userRepository.delete(user);
+                session.invalidate();
+                return new CommonResponseDTO("User successfully deleted! ", LocalDateTime.now());
+            }
+            else {
+                return new CommonResponseDTO("User with id : " + idParam + " does not exist!", LocalDateTime.now());
+            }
+        }
+        throw new InvalidLogInException("Please log in to delete your profile!");
     }
 
 
