@@ -30,9 +30,11 @@ public class PizzaDao {
     public void addPizza(Pizza pizza){
         pizzaRepository.save(pizza);
     }
+
     public List<Pizza> getAllPizas(){
        return pizzaRepository.findAll();
     }
+
     public Optional<Pizza> findPizzaByName(String name){
         return pizzaRepository.findByName(name);
     }
@@ -51,6 +53,7 @@ public class PizzaDao {
             throw new ProductException("This product does not exist! Please add it first!");
         }
     }
+
     public void changePizzaQuantity(long id, int quantity) throws Exception {
         if(checkIfPizzaExists(id)) {
             try (Connection c = jdbcTemplate.getDataSource().getConnection();) {
@@ -61,6 +64,7 @@ public class PizzaDao {
             }
         }
     }
+
     public void deletePizza(long id) throws Exception {
         if(checkIfPizzaExists(id)) {
             try (Connection c = jdbcTemplate.getDataSource().getConnection();) {
@@ -70,6 +74,9 @@ public class PizzaDao {
             }
         }
     }
+
+
     //TODO : add in DB quantity for pizzas non-pizzas and ingredients
+
 
 }

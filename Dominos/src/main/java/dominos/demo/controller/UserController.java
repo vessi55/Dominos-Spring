@@ -37,7 +37,7 @@ public class UserController extends BaseController {
             user.setLast_name(regUser.getLast_name());
             user.setEmail(regUser.getEmail());
             user.setPassword(regUser.getPassword());
-            userDao.registerUser(user);
+            userRepository.save(user);
             //SessionManager.logUser(session,user);
         }
         return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),

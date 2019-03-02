@@ -1,6 +1,6 @@
 package dominos.demo.controller;
 
-import dominos.demo.model.DTOs.ResponseDTO;
+import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.util.exceptions.InvalidInputException;
@@ -39,14 +39,35 @@ public class PizzaController  extends BaseController{
             throw new ProductException("Product with this name " + name + " does not exists!");
         }
     }
+
     @PostMapping(value = "/products/add")
-    public ResponseDTO savePizza(@RequestBody Pizza pizza, HttpSession session) throws BaseException {
+    public CommonResponseDTO savePizza(@RequestBody Pizza pizza, HttpSession session) throws BaseException {
         SessionManager.validateLoginAdmin(session);
         validateProductInput(pizza);
         validatePizzaByName(pizza);
         pizzaDao.addPizza(pizza);
-        return  new ResponseDTO("Pizza" + pizza.getName() + "is successfully added" , LocalDateTime.now());
+        return  new CommonResponseDTO("Pizza" + pizza.getName() + "is successfully added" , LocalDateTime.now());
     }
+
+    @PutMapping(value = ("/product/{id}/quantity/{quantity}"))
+    public CommonResponseDTO changeProductQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws Exception {
+        SessionManager.validateLoginAdmin(session);
+        if (quantity >= MIN_QUANTITY && quantity <= MAX_QUANTITY) {
+            pizzaDao.changePizzaQuantity(id, quantity);
+        }
+        else {
+            throw new InvalidInputException("Quantity must be in interval : " + MIN_QUANTITY  +" - " + MAX_QUANTITY + " .");
+        }
+        return new CommonResponseDTO("Pizza with id: " + id + "has quantity : " + quantity + " ." , LocalDateTime.now());
+    }
+
+    @PutMapping(value = ("/product/{id}/delete"))
+    public CommonResponseDTO deleteProduct(@PathVariable("id") long id, HttpSession session) throws Exception {
+        SessionManager.validateLoginAdmin(session);
+        pizzaDao.deletePizza(id);
+        return new CommonResponseDTO("Pizza with id: " + id + " was removed! : " , LocalDateTime.now());
+    }
+
 
     private void validateProductInput(Pizza pizza)throws BaseException {
         if(pizza.getName() == null || pizza.getDescription() == null || pizza.getSize() == null
@@ -55,6 +76,7 @@ public class PizzaController  extends BaseController{
             throw new InvalidInputException("Invalid input for the pizza. Please try again");
         }
     }
+
     private void validatePizzaByName(Pizza pizza) throws BaseException {
         if (getPizzaByName(pizza.getName()) != null) {
             throw new InvalidInputException("Product with that name already exists. You can change its quantity only!");
@@ -70,24 +92,5 @@ public class PizzaController  extends BaseController{
             return null;
         }
     }
-    @PutMapping(value = ("/product/{id}/quantity/{quantity}"))
-    public ResponseDTO changeProductQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws Exception {
-        SessionManager.validateLoginAdmin(session);
-        if (quantity >= MIN_QUANTITY && quantity <= MAX_QUANTITY) {
-            pizzaDao.changePizzaQuantity(id, quantity);
-        }
-        else {
-            throw new InvalidInputException("Quantity must be in interval : " + MIN_QUANTITY  +" - " + MAX_QUANTITY + " .");
-        }
-        return new ResponseDTO("Pizza with id: " + id + "has quantity : " + quantity + " ." , LocalDateTime.now());
-    }
-
-    @PutMapping(value = ("/product/{id}/delete"))
-    public ResponseDTO deleteProduct(@PathVariable("id") long id, HttpSession session) throws Exception {
-        SessionManager.validateLoginAdmin(session);
-        pizzaDao.deletePizza(id);
-        return new ResponseDTO("Pizza with id: " + id + " was removed! : " , LocalDateTime.now());
-    }
-
 
 }

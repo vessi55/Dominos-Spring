@@ -22,10 +22,6 @@ public class UserDao {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void registerUser(User user){
-        userRepository.save(user);
-    }
-
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email);
     }
