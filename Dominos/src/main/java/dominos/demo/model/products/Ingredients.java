@@ -13,11 +13,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ingredients")
 
-public class Ingredients {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    protected String name;
+public class Ingredients extends Product{
     private ProductCategory category;
-    protected double price;
 }
