@@ -16,6 +16,7 @@ public interface PizzaRepository extends JpaRepository<Pizza,Long>{
     @Override
     Optional<Pizza> findById(Long aLong);
     Optional<Pizza> findByName(String name);
+
     @Override
     void delete(Pizza pizza);
     List<Pizza> findAllByNameOrderByPrice(String name);

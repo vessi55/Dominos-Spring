@@ -9,6 +9,7 @@ import dominos.demo.model.repositories.AddressRepository;
 import dominos.demo.model.users.Address;
 import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
+import dominos.demo.util.exceptions.InvalidAddressException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,10 +37,12 @@ public class AddressController extends BaseController {
         if (SessionManager.isLoggedIn(session)) {
             User user = (User) session.getAttribute(SessionManager.LOGGED);
             if (user_id == user.getId()) {
-                address.setUser_id(user.getId());
-                addressDao.insertAddress(address);
-                return new CommonResponseDTO(user.getFirst_name() + " " + user.getLast_name() + " added new address!",
-                        LocalDateTime.now());
+                if (validAddress(address)) {
+                    address.setUser_id(user.getId());
+                    addressDao.insertAddress(address);
+                    return new CommonResponseDTO(user.getFirst_name() + " " + user.getLast_name() + " added new address!",
+                            LocalDateTime.now());
+                }
             }
             else {
                 return new CommonResponseDTO("You have no rights to add a new address.", LocalDateTime.now());
@@ -60,6 +63,15 @@ public class AddressController extends BaseController {
             }
         }
         throw new InvalidLogInException("Please log in to view all your addresses!");
+    }
+
+    public boolean validAddress(Address address) throws BaseException {
+        if(address.getCity().isEmpty() || address.getCity() == null
+                || address.getStreet().isEmpty() || address.getStreet() == null) {
+            throw new InvalidAddressException("City/Stree MUST NOT be empty!");
+
+        }
+        return true;
     }
 
 }

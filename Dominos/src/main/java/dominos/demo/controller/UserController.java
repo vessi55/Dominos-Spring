@@ -14,6 +14,7 @@ import dominos.demo.util.exceptions.InvalidRegistrationException;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,6 +96,18 @@ public class UserController extends BaseController {
         throw new InvalidLogInException("Please log in to delete your profile!");
     }
 
+    @GetMapping(value = "/users/{name}")
+    public String getByName(@PathVariable("name") String name){
+        return "Welcome, " + name;
+    }
+
+    @PutMapping(value = "/users/{id}/setAdmin")
+    public CommonResponseDTO setAdmin(@PathVariable ("id") long id, HttpSession session) {
+        User user = (User) session.getAttribute(SessionManager.LOGGED);
+        user.setAdmin(true);
+        userRepository.save(user);
+        return new CommonResponseDTO("ADMIN SUCCESSFULL!", LocalDateTime.now());
+    }
 
     private boolean validateLogIn(UserLogInDTO user) throws InvalidLogInException {
         String email = user.getEmail();

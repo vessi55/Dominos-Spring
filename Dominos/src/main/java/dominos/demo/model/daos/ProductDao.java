@@ -31,12 +31,15 @@ public class ProductDao {
     public void addProduct(Pizza pizza){
         pizzaRepository.save(pizza);
     }
+
     public  Optional<Pizza> getById(long id){
         return pizzaRepository.findById(id);
     }
+
     public List<Pizza> getAllPizzas(){
         return pizzaRepository.findAll();
     }
+
     public Pizza getProductByName(String name) {
         Optional<Pizza> product = pizzaRepository.findByName(name);
         if (product.isPresent()) {
@@ -46,7 +49,8 @@ public class ProductDao {
             return null;
         }
     }
-    public Optional<Pizza> getByName(String name){
+
+    public Optional<Pizza> getAllByName(String name){
         return pizzaRepository.findByName(name);
     }
 
@@ -57,22 +61,25 @@ public class ProductDao {
         }
         throw new ProductException("The product  does not exist! Please add it first!");
     }
+
     public void changePizzaQuantity(long id, int quantity) throws ProductException {
         if(checkIfProductExist(id)){
             jdbcTemplate.update(UPDATE_QUANTITY, quantity,id);
         }
     }
+
+    public List<Pizza> getAllPizzaNamesOrderedByPrice(String name){
+        return pizzaRepository.findAllByNameOrderByPrice(name);
+    }
+
     public CommonResponseDTO deleteProductById(long id) throws InvalidInputException {
         Optional<Pizza> pizza = pizzaRepository.findById(id);
         if(pizza.isPresent()) {
-           pizzaRepository.delete(pizza.get());
-           return new CommonResponseDTO(pizza.get().getName()  + " was successfully deleted from database!", LocalDateTime.now());
+            pizzaRepository.delete(pizza.get());
+            return new CommonResponseDTO(pizza.get().getName()  + " was successfully deleted from database!", LocalDateTime.now());
         }
         throw new InvalidInputException("The pizza does not exist in  database.");
 
-    }
-    public List<Pizza> getAllPizzaNamesOrderedByPrice(String name){
-        return pizzaRepository.findAllByNameOrderByPrice(name);
     }
 
 

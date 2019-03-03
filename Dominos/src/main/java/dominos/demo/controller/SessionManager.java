@@ -20,15 +20,14 @@ public class SessionManager {
         session.setAttribute(LOGGED, user);
     }
 
-    protected static void validateLoginAdmin(HttpSession session)throws BaseException {
+    protected static boolean validateLoginAdmin(HttpSession session)throws BaseException {
         if(!isLoggedIn(session)) {
             throw new InvalidLogInException("You are not logged!");
         }
-        else {
-            User user = (User)(session.getAttribute(LOGGED));
-            if(!user.isAdmin()) {
-                throw new InvalidLogInException("You are not admin!");
-            }
+        User user = (User)(session.getAttribute(LOGGED));
+        if(!user.isAdmin()) {
+            throw new InvalidLogInException("You are not admin!");
         }
+        return true;
     }
 }
