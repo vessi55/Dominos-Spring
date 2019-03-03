@@ -7,12 +7,12 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@Entity
-@Table(name = "ingredients")
-
-public class Ingredients extends Product{
-    private ProductCategory category;
-}
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@Entity
+//@Table(name = "ingredients")
+//
+//public class Ingredients {
+//    private ProductCategory category;
+//}
