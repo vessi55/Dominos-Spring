@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Restaurant {
-    private String id;
+    private long id;
     private String city;
     private String address;
 

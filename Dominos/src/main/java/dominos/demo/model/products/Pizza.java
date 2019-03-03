@@ -21,6 +21,8 @@ public class Pizza  {
     private String name;
     private double price;
     private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private Size size;
     private double weight;
     private String image_url;

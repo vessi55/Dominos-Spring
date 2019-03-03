@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @RestController
 public class ImageController {
@@ -29,28 +30,31 @@ public class ImageController {
     @PostMapping("pizzas/{name}/uploadImage")
     public CommonResponseDTO uploadImage(@RequestBody ImageDTO imageDTO, @PathVariable("name") String name, HttpSession session) throws Exception {
         if (SessionManager.validateLoginAdmin(session)) {
-            Pizza pizza = productDao.getProductByName(name);
-            if (pizza.getImage_url() == null) {
-                String base64 = imageDTO.getImagePath();
-                byte[] bytes = Base64.getDecoder().decode(base64);
-                String imageName = pizza.getName() + System.currentTimeMillis() + ".png";
-                File newImage = new File(IMAGE_DIR + imageName);
-                FileOutputStream fos = new FileOutputStream(newImage);
-                fos.write(bytes);
-                pizza.setImage_url(imageName);
-                pizzaRepository.save(pizza);
-                return new CommonResponseDTO("Image uploaded successfully!", LocalDateTime.now());
+            List<Pizza> pizzas = productDao.getAllPizzasByName(name);
+            for(Pizza pizza : pizzas) {
+                if (pizza.getImage_url() == null) {
+                    String base64 = imageDTO.getImagePath();
+                    byte[] bytes = Base64.getDecoder().decode(base64);
+                    String imageName = pizza.getName() + System.currentTimeMillis() + ".png";
+                    File newImage = new File(IMAGE_DIR + imageName);
+                    FileOutputStream fos = new FileOutputStream(newImage);
+                    fos.write(bytes);
+                    pizza.setImage_url(imageName);
+                    pizzaRepository.save(pizza);
+
+                }
             }
-            throw new ProductException("Image already uploaded for pizza: " + pizza.getName());
+            return new CommonResponseDTO("Image uploaded successfully!", LocalDateTime.now());
         }
         else {
             throw new ProductException("You have no rights to upload an image!");
         }
     }
 
-    @GetMapping(value="/pizzas/{name}/downloadImage", produces = "image/png")
-    public byte[] downloadImage(@PathVariable("name") String name, HttpSession session) throws Exception {
-        Pizza pizza = productDao.getProductByName(name);
+
+    @GetMapping(value="/pizzas/{id}/downloadImage", produces = "image/png")
+    public byte[] downloadImage(@PathVariable("id") long id, HttpSession session) throws Exception {
+        Pizza pizza = productDao.getById(id);
         if(pizza.getImage_url() != null) {
             File newImage = new File(IMAGE_DIR + pizza.getImage_url());
             FileInputStream fis = new FileInputStream(newImage);
@@ -59,17 +63,22 @@ public class ImageController {
         throw new ProductException("No image found for pizza: " + pizza.getName());
     }
 
+
     @DeleteMapping("/pizzas/{name}/deleteImage")
     public CommonResponseDTO deleteImage(@PathVariable ("name") String name, HttpSession session) throws Exception {
         if (SessionManager.validateLoginAdmin(session)) {
-            Pizza pizza = productDao.getProductByName(name);
-            File newImage = new File(IMAGE_DIR + pizza.getImage_url());
-            if (pizza.getImage_url() != null) {
-                newImage.delete();
-                pizza.setImage_url(null);
-                return new CommonResponseDTO("Image deleted successfully!", LocalDateTime.now());
+            List<Pizza> pizzas = productDao.getAllPizzasByName(name);
+            for(Pizza pizza : pizzas) {
+                //Pizza pizza = productDao.getById(id);
+                File newImage = new File(IMAGE_DIR + pizza.getImage_url());
+                if (pizza.getImage_url() != null) {
+                    newImage.delete();
+                    pizza.setImage_url(null);
+                    pizzaRepository.save(pizza);
+
+                }
             }
-            throw new ProductException("No image found for pizza: " + pizza.getName());
+            return new CommonResponseDTO("Image deleted successfully!", LocalDateTime.now());
         }
         throw new ProductException("You have no rights to delete this image!");
     }

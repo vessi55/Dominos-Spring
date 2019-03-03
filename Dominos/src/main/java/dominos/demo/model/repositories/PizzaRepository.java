@@ -8,16 +8,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-
 public interface PizzaRepository extends JpaRepository<Pizza,Long>{
+
     @Override
     List<Pizza> findAll();
 
+    List<Pizza> findAllByNameOrderByPrice(String name);
+
+    List<Pizza> findAllByName(String name);
+
+
     @Override
     Optional<Pizza> findById(Long aLong);
+
     Optional<Pizza> findByName(String name);
 
     @Override
     void delete(Pizza pizza);
-    List<Pizza> findAllByNameOrderByPrice(String name);
+
+
 }
