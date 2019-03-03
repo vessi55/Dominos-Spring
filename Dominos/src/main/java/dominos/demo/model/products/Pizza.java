@@ -14,13 +14,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "pizzas")
-public class Pizza {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected long id;
-    protected String name;
+public class Pizza  extends Product{
+
     private String description;
-    protected double price;
     private Size size;
     private double weight;
     private String image_url;

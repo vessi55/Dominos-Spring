@@ -1,23 +1,29 @@
-//package dominos.demo.model.products;
+package dominos.demo.model.products;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@Entity
-//public abstract class Product {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    protected long id;
-//    protected String name;
-//    protected double price;
-//    //private String image;
-//}
+@Getter
+@Setter
+@NoArgsConstructor
+@MappedSuperclass
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "id")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Non_Pizza.class, name = "non-pizza"),
+        @JsonSubTypes.Type(value = Ingredients.class, name = "ingredients")
+})
+public abstract class Product  {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected long id;
+    protected String name;
+    protected double price;
+}

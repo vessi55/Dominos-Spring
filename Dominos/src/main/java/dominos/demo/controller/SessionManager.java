@@ -21,7 +21,7 @@ public class SessionManager {
     }
 
     protected static void validateLoginAdmin(HttpSession session)throws BaseException {
-        if(!isLoggedIn(session)){
+        if(!isLoggedIn(session)) {
             throw new InvalidLogInException("You are not logged!");
         }
         else {
