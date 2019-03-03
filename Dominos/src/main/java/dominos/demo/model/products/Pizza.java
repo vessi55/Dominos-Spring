@@ -14,8 +14,12 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "pizzas")
-public class Pizza  extends Product{
-
+public class Pizza  {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String name;
+    private double price;
     private String description;
     private Size size;
     private double weight;

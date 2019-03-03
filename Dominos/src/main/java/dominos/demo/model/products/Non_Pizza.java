@@ -7,14 +7,14 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@Entity
-@Table(name = "non-pizzas")
-
-public class Non_Pizza extends Product {
-
-    private ProductCategory category;
-    private String image_url;
-}
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@Entity
+//@Table(name = "non-pizzas")
+//
+//public class Non_Pizza {
+//
+//    private ProductCategory category;
+//    private String image_url;
+//}

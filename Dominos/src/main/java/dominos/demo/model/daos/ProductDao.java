@@ -1,81 +1,82 @@
 package dominos.demo.model.daos;
 
-import dominos.demo.model.products.Ingredients;
-import dominos.demo.model.products.Non_Pizza;
+import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.products.Pizza;
-import dominos.demo.model.products.Product;
-import dominos.demo.model.repositories.ProductRepository;
+import dominos.demo.model.repositories.PizzaRepository;
+import dominos.demo.util.exceptions.InvalidInputException;
 import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class ProductDao {
 
+    private static final String UPDATE_QUANTITY = "UPDATE pizzas SET quantity= ? WHERE id = ?";
+    private static final String EDIT_PIZZA = "UPDATE pizzas SET name = ?, description = ?, size = ?, weight = ?  , price = ?  , image_url = ? WHERE id = ?";
+
+
+
     @Autowired
-    ProductRepository productRepository;
+    PizzaRepository pizzaRepository;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public void addProduct(Product product){
-        productRepository.save(product);
+    public void addProduct(Pizza pizza){
+        pizzaRepository.save(pizza);
     }
-
-    public List<Pizza> getAllPizzas() {
-        return (List<Pizza>)(List<?>)productRepository.findAll();
+    public  Optional<Pizza> getById(long id){
+        return pizzaRepository.findById(id);
     }
-
-    public List<Non_Pizza> getAllNonPizzas() {
-        return (List<Non_Pizza>)(List<?>)productRepository.findAll();
+    public List<Pizza> getAllPizzas(){
+        return pizzaRepository.findAll();
     }
-
-    public List<Ingredients> getAllIngredients() {
-        return (List<Ingredients>)(List<?>)productRepository.findAll();
-    }
-
-    public boolean checkIfProductExistsById(long id, String table) throws Exception {
-        try (Connection con = jdbcTemplate.getDataSource().getConnection();) {
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM  "+table+" WHERE id = ?;");
-            ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            int result = rs.getInt(1);
-            // if result != 0, there are product with this id
-            if (result != 0) {
-                return true;
-            }
-            throw new ProductException("The product  does not exist! Please add it first!");
+    public Pizza getProductByName(String name) {
+        Optional<Pizza> product = pizzaRepository.findByName(name);
+        if (product.isPresent()) {
+            return product.get();
+        }
+        else {
+            return null;
         }
     }
-    public void changeProductQuantity(long id, int quantity, String table) throws Exception {
-        if(checkIfProductExistsById(id, table)) {
-            try (Connection c = jdbcTemplate.getDataSource().getConnection();) {
-                PreparedStatement ps = c.prepareStatement("UPDATE "+ table +" SET quantity= ? WHERE id= ?");
-                ps.setInt(1, quantity);
-                ps.setLong(2, id);
-                ps.execute();
-            }
+    public Optional<Pizza> getByName(String name){
+        return pizzaRepository.findByName(name);
+    }
+
+    public boolean checkIfProductExist(long id) throws ProductException {
+        Optional<Pizza> pizza = pizzaRepository.findById(id);
+        if(pizza.isPresent()){
+            return true;
+        }
+        throw new ProductException("The product  does not exist! Please add it first!");
+    }
+    public void changePizzaQuantity(long id, int quantity) throws ProductException {
+        if(checkIfProductExist(id)){
+            jdbcTemplate.update(UPDATE_QUANTITY, quantity,id);
         }
     }
-    public void deleteProductById(long id, String table) throws Exception {
-        if(checkIfProductExistsById(id, table)) {
-            try (Connection c = jdbcTemplate.getDataSource().getConnection();) {
-                PreparedStatement ps = c.prepareStatement("DELETE FROM " + table+" WHERE id=?;");
-                ps.setLong(1, id);
-                ps.execute();
-            }
+    public CommonResponseDTO deleteProductById(long id) throws InvalidInputException {
+        Optional<Pizza> pizza = pizzaRepository.findById(id);
+        if(pizza.isPresent()) {
+           pizzaRepository.delete(pizza.get());
+           return new CommonResponseDTO(pizza.get().getName()  + " was successfully deleted from database!", LocalDateTime.now());
         }
+        throw new InvalidInputException("The pizza does not exist in  database.");
+
     }
+    public List<Pizza> getAllPizzaNamesOrderedByPrice(String name){
+        return pizzaRepository.findAllByNameOrderByPrice(name);
+    }
+
 
     //TODO : add in DB quantity for pizzas non-pizzas and ingredients
+
 
 }
