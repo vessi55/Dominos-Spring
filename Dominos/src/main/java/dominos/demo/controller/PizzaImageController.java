@@ -19,17 +19,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class ImageController extends BaseController{
+public class PizzaImageController extends BaseController{
 
     public static final String IMAGE_DIR = "B:\\SPRING\\Dominos-Spring\\pictures\\";
 
     @Autowired
     private PizzaDao pizzaDao;
 
-    private PizzaDao productDao;
-
     @Autowired
     private PizzaRepository pizzaRepository;
+
 
     @PostMapping("pizzas/{name}/uploadImage")
     public CommonResponseDTO uploadImage(@RequestBody ImageDTO imageDTO, @PathVariable("name") String name, HttpSession session) throws Exception {
