@@ -4,11 +4,13 @@ import dominos.demo.model.DTOs.AddressResponseDTO;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.AddressRepository;
 import dominos.demo.model.users.Address;
+import dominos.demo.util.exceptions.InvalidAddressException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.mail.internet.AddressException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +31,12 @@ public class AddressDao {
         addressRepository.save(address);
     }
 
+    public List<Address> getAll() { return addressRepository.findAll();}
+
     public List<AddressResponseDTO> getAllUserAddresses(long user_id) {
         List<AddressResponseDTO> addresses =  jdbcTemplate.query(ALL_ADDRESSES_OF_USER, new Object[]{user_id}, new BeanPropertyRowMapper<>(AddressResponseDTO.class));
         return addresses;
     }
+
 
 }

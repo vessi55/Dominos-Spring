@@ -1,5 +1,6 @@
 package dominos.demo.model.repositories;
 
+import dominos.demo.model.DTOs.AddressResponseDTO;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.users.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface AddressRepository extends JpaRepository<Address,Long> {
 
+    @Override
     List<Address> findAll();
 }

@@ -9,14 +9,14 @@ import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import dominos.demo.model.enums.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ProductDao {
+public class PizzaDao {
 
     private static final String UPDATE_QUANTITY = "UPDATE pizzas SET quantity= ? WHERE id = ?";
 
@@ -29,7 +29,7 @@ public class ProductDao {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public void addProduct(Pizza pizza){
+    public void addPizza(Pizza pizza){
         pizzaRepository.save(pizza);
     }
 
@@ -37,7 +37,7 @@ public class ProductDao {
         return pizzaRepository.findAll();
     }
 
-    public List<Pizza> getAllPizzaNamesOrderedByPrice(String name){
+    public List<Pizza> getPizzasByNameOrderedByPrice(String name){
         return pizzaRepository.findAllByNameOrderByPrice(name);
     }
 
@@ -45,54 +45,39 @@ public class ProductDao {
         return pizzaRepository.findAllByName(name);
     }
 
-    public Pizza getById(long id){
-        Optional<Pizza> product = pizzaRepository.findById(id);
-        if (product.isPresent()) {
-            return product.get();
+    public List<Pizza> getPizzasPriceFilter(double price) { return pizzaRepository.findAllByPriceLessThan(price);}
+
+    public Optional<Pizza> getById(Long aLong){
+        return pizzaRepository.findById(aLong);
+    }
+
+    public Optional<Pizza> getByNameAndSize(String name, Size size){
+        return pizzaRepository.findByNameAndSize(name, size);
+    }
+
+    public CommonResponseDTO deletePizzaById(long id) throws InvalidInputException {
+        Optional<Pizza> pizza = pizzaRepository.findById(id);
+        if(pizza.isPresent()) {
+            pizzaRepository.delete(pizza.get());
+            return new CommonResponseDTO(pizza.get().getName()  + " was successfully deleted from database!", LocalDateTime.now());
         }
-        else {
-            return null;
+        throw new InvalidInputException("Pizza with id:" + id + " does not exist in database.");
+
+    }
+
+    public void changePizzaQuantity(long id, int quantity) throws BaseException {
+        if(checkIfPizzaExists(id)){
+            jdbcTemplate.update(UPDATE_QUANTITY, quantity, id);
         }
     }
 
-    public Pizza getByName(String name) {
-        Optional<Pizza> product = pizzaRepository.findByName(name);
-        if (product.isPresent()) {
-            return product.get();
-        }
-        else {
-            return null;
-        }
-    }
-
-    public boolean checkIfProductExist(long id) throws ProductException {
+    public boolean checkIfPizzaExists(long id) throws ProductException {
         Optional<Pizza> pizza = pizzaRepository.findById(id);
         if(pizza.isPresent()){
             return true;
         }
         throw new ProductException("The product does not exist! Please add it first!");
     }
-
-    public void changePizzaQuantity(long id, int quantity) throws BaseException {
-        if(checkIfProductExist(id)){
-            jdbcTemplate.update(UPDATE_QUANTITY, quantity, id);
-        }
-    }
-
-    public CommonResponseDTO deleteProductById(long id) throws InvalidInputException {
-        Optional<Pizza> pizza = pizzaRepository.findById(id);
-        if(pizza.isPresent()) {
-            pizzaRepository.delete(pizza.get());
-            return new CommonResponseDTO(pizza.get().getName()  + " was successfully deleted from database!", LocalDateTime.now());
-        }
-        throw new InvalidInputException("The pizza does not exist in  database.");
-
-    }
-
-
-
-
-    //TODO : add in DB quantity for pizzas non-pizzas and ingredients
 
 
 }
