@@ -69,49 +69,4 @@ public class PizzaController extends BaseController{
             throw new InvalidInputException("Invalid input for the pizza. Please try again! All fields must be filled in!");
         }
     }
-    @PostMapping(value = ("/products/{id}/shoppingCart/add"))
-    public CommonResponseDTO addToShoppingCart(@PathVariable("id") long id, HttpSession session)  throws InvalidLogInException {
-        if(SessionManager.isLoggedIn(session)) { //TODO : exception for not logged in
-            HashMap<Pizza, Integer> shoppingCart;
-            Pizza pizza = productDao.getById(id);
-            if (session.getAttribute(SHOPPING_CART) == null) {
-                session.setAttribute(SHOPPING_CART, new HashMap<Pizza, Integer>());
-                shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute(SHOPPING_CART);
-                shoppingCart.put(pizza, 1);
-            } else {
-                shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute("cart");
-                if (!shoppingCart.containsKey(pizza)) {
-                    shoppingCart.put(pizza, 1);
-                }
-                shoppingCart.put(pizza, shoppingCart.get(pizza) + 1);
-            }
-            return new CommonResponseDTO("Pizza " + pizza.getName() + " is successfully added to your shopping cart!", LocalDateTime.now());
-        }
-        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
-    }
-
-    @PostMapping(value = ("/shoppingCart/order"))
-    public CommonResponseDTO makeOrder(HttpSession session) throws BaseException {
-        if(SessionManager.isLoggedIn(session)) {
-            if (session.getAttribute(SHOPPING_CART) != null) {
-                productDao.makeOrder(session);
-                return new CommonResponseDTO("Your order was successful!", LocalDateTime.now());
-            }
-            throw new EmptyShoppingCartException("Your shopping cart is empty!");
-        }
-        throw new InvalidLogInException("You are not logged! Please log in to continue!");
-    }
-//    @GetMapping(value = ("/shoppingCart"))
-//    public ArrayList<ShoppingCartViewDto> viewCart(HttpSession session) throws BaseException{
-//        if(SessionManager.isLoggedIn(session)) {
-//            if (session.getAttribute(SHOPPING_CART) != null) {
-//                return productDao.viewShoppingCart(session);
-//            } else {
-//                throw new EmptyShoppingCartException("Your shopping cart is empty!");
-//            }
-//        }
-//        throw new InvalidLogInException("Please log in to continue");
-//    }
-
-
 }

@@ -1,9 +1,11 @@
 package dominos.demo.model.users;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dominos.demo.model.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -22,6 +24,9 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin;
     private String phone;
-    @OneToMany
-    private Set<Order> myOrders;
+//    @OneToMany
+//    @JoinColumn(name="user_id")
+    @JsonIgnore
+    @OneToMany(mappedBy = "id", orphanRemoval = true)
+    private Set<Order> myOrders = new HashSet<>();
 }

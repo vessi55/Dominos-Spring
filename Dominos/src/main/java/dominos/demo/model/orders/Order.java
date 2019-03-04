@@ -2,6 +2,8 @@ package dominos.demo.model.orders;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dominos.demo.model.users.User;
 
 import lombok.Getter;
@@ -25,6 +27,9 @@ public class Order {
     private LocalDateTime order_time;
     private LocalDateTime delivery_time;
     private String status; // TODO : could be enum or private boolean isDelivered
+    //@ManyToOne
+    @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }
