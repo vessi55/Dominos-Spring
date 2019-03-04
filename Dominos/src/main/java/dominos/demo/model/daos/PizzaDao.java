@@ -1,8 +1,11 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
+import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Pizza;
+import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.repositories.PizzaRepository;
+import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;
 import dominos.demo.util.exceptions.ProductException;
@@ -11,8 +14,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import dominos.demo.model.enums.Size;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -22,12 +33,23 @@ public class PizzaDao {
 
     private static final String EDIT_PIZZA = "UPDATE pizzas SET name = ?, description = ?, size = ?, weight = ?  , price = ?  , image_url = ? WHERE id = ?";
 
+    public static final String SHOPPING_CART = "cart";
+    public static final String USER = "user";
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
     PizzaRepository pizzaRepository;
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    OrderRepository orderRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    TransactionTemplate transactionTemplate;
 
     public void addPizza(Pizza pizza){
         pizzaRepository.save(pizza);

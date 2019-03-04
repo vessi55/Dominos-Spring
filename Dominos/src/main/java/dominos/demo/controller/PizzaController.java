@@ -4,27 +4,28 @@ import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.enums.Size;
 import dominos.demo.model.products.Pizza;
-import dominos.demo.util.exceptions.InvalidInputException;
-import dominos.demo.util.exceptions.ProductException;
-import dominos.demo.util.exceptions.BaseException;
+import dominos.demo.util.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 public class PizzaController extends BaseController{
 
+    @Autowired
+    PizzaDao pizzaDao;
 
     public static final double MIN_QUANTITY = 0;
     public static final double MAX_QUANTITY = 100;
 
+    public static final String SHOPPING_CART = "cart";
+    public static final String USER = "user";
 
-    @Autowired
-    PizzaDao pizzaDao;
 
     @PostMapping(value = "/pizzas/add")
     public CommonResponseDTO savePizza(@RequestBody Pizza pizza, HttpSession session) throws BaseException  {
@@ -87,7 +88,7 @@ public class PizzaController extends BaseController{
     }
 
     @PutMapping(value = ("/pizzas/{id}/quantity/{quantity}"))
-    public CommonResponseDTO changePizzaQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws BaseException {
+    public CommonResponseDTO updatePizzaQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws BaseException {
        // SessionManager.validateLoginAdmin(session);
         if (quantity >= MIN_QUANTITY && quantity <= MAX_QUANTITY) {
             pizzaDao.changePizzaQuantity(id, quantity);
@@ -105,5 +106,6 @@ public class PizzaController extends BaseController{
             throw new InvalidInputException("Invalid input for the pizza. Please try again! All fields must be filled in!");
         }
     }
+
 
 }
