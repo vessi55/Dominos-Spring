@@ -25,6 +25,9 @@ public class ImageController extends BaseController{
 
     @Autowired
     private PizzaDao pizzaDao;
+
+    private PizzaDao productDao;
+
     @Autowired
     private PizzaRepository pizzaRepository;
 

@@ -25,5 +25,7 @@ public class Pizza  {
     @Column(length = 20)
     private Size size;
     private double weight;
+    private int quantity;
     private String image_url;
+
 }
