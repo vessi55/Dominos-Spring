@@ -1,13 +1,10 @@
 package dominos.demo.model.users;
-
-
+import dominos.demo.model.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
-
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,15 +22,6 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin;
     private String phone;
-    //private Set<Order> myOrders;
-
-    public User(String first_name, String last_name, String email, String password, boolean isAdmin, String phone) {
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.email = email;
-        this.password = password;
-        this.isAdmin = isAdmin;
-        this.phone = phone;
-
-    }
+    @OneToMany
+    private Set<Order> myOrders;
 }

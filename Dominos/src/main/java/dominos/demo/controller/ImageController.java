@@ -2,7 +2,7 @@ package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.DTOs.ImageDTO;
-import dominos.demo.model.daos.ProductDao;
+import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.PizzaRepository;
 import dominos.demo.util.exceptions.ProductException;
@@ -23,7 +23,7 @@ public class ImageController {
     public static final String IMAGE_DIR = "B:\\SPRING\\Dominos-Spring\\pictures\\";
 
     @Autowired
-    private ProductDao productDao;
+    private PizzaDao productDao;
     @Autowired
     private PizzaRepository pizzaRepository;
 

@@ -4,12 +4,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class Restaurant {
-    private long id;
-    private String city;
-    private String address;
+import javax.persistence.*;
 
-}
+//
+//@Getter
+//@Setter
+//@NoArgsConstructor
+//@Entity
+//@Table(name = "restaurants")
+//public class Restaurant {
+//    @Id
+//    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+//    private long id;
+//    private String city;
+//    private String address;
+//
+//}
