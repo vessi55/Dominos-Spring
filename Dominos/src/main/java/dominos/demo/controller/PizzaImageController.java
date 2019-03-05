@@ -16,21 +16,24 @@ import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-public class ImageController {
+public class PizzaImageController extends BaseController{
 
     public static final String IMAGE_DIR = "B:\\SPRING\\Dominos-Spring\\pictures\\";
 
     @Autowired
-    private PizzaDao productDao;
+    private PizzaDao pizzaDao;
+
     @Autowired
     private PizzaRepository pizzaRepository;
+
 
     @PostMapping("pizzas/{name}/uploadImage")
     public CommonResponseDTO uploadImage(@RequestBody ImageDTO imageDTO, @PathVariable("name") String name, HttpSession session) throws Exception {
         if (SessionManager.validateLoginAdmin(session)) {
-            List<Pizza> pizzas = productDao.getAllPizzasByName(name);
+            List<Pizza> pizzas = pizzaDao.getAllPizzasByName(name);
             for(Pizza pizza : pizzas) {
                 if (pizza.getImage_url() == null) {
                     String base64 = imageDTO.getImagePath();
@@ -54,20 +57,20 @@ public class ImageController {
 
     @GetMapping(value="/pizzas/{id}/downloadImage", produces = "image/png")
     public byte[] downloadImage(@PathVariable("id") long id, HttpSession session) throws Exception {
-        Pizza pizza = productDao.getById(id);
-        if(pizza.getImage_url() != null) {
-            File newImage = new File(IMAGE_DIR + pizza.getImage_url());
+        Optional<Pizza> pizza = pizzaDao.getById(id);
+        if(pizza.get().getImage_url() != null) {
+            File newImage = new File(IMAGE_DIR + pizza.get().getImage_url());
             FileInputStream fis = new FileInputStream(newImage);
             return fis.readAllBytes();
         }
-        throw new ProductException("No image found for pizza: " + pizza.getName());
+        throw new ProductException("No image found for pizza: " + pizza.get().getName());
     }
 
 
     @DeleteMapping("/pizzas/{name}/deleteImage")
     public CommonResponseDTO deleteImage(@PathVariable ("name") String name, HttpSession session) throws Exception {
         if (SessionManager.validateLoginAdmin(session)) {
-            List<Pizza> pizzas = productDao.getAllPizzasByName(name);
+            List<Pizza> pizzas = pizzaDao.getAllPizzasByName(name);
             for(Pizza pizza : pizzas) {
                 //Pizza pizza = productDao.getById(id);
                 File newImage = new File(IMAGE_DIR + pizza.getImage_url());

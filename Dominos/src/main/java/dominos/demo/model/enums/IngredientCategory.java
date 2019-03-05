@@ -1,6 +1,6 @@
 //package dominos.demo.model.enums;
 //
-//public enum   IngredientCategory {
+//public enum  IngredientCategory {
 //
 //    public enum  Cheese {PARMEZAN, MOZZARELA, EMENTAL, MELTED_CHEESE, CEDAR, CHEESE;}
 //    public enum Meat {HAM, TUNA, BEEF, CHICKEN, BAKON, PEPERONI, CHORIZO;}

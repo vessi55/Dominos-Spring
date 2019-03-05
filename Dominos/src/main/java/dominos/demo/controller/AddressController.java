@@ -21,15 +21,13 @@ import java.util.List;
 @RestController
 public class AddressController extends BaseController {
 
-    @Autowired
-    private AddressRepository addressRepository;
 
     @Autowired
     private AddressDao addressDao;
 
     @GetMapping(value = "/allAddresses")
     public List<Address> getAllAddresses(){
-        return addressRepository.findAll();
+        return addressDao.getAll();
     }
 
     @PostMapping(value = "/addAddress/{user_id}")

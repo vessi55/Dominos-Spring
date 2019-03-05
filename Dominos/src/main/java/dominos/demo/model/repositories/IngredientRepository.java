@@ -17,4 +17,5 @@ package dominos.demo.model.repositories;
 //    Optional<Ingredient> findById(Long aLong);
 //
 //    List<Ingredient> findAllByIdOrderByIngredientCategory(long id);
+
 //}

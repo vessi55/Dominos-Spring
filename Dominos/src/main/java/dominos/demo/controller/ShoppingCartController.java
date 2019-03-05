@@ -33,7 +33,7 @@ public class ShoppingCartController extends BaseController{
     public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("id") long id, HttpSession session)  throws InvalidLogInException {
         if(SessionManager.isLoggedIn(session)) { //TODO : exception for not logged in
             HashMap<Pizza, Integer> shoppingCart;
-            Pizza pizza = pizzaDao.getById(id);
+            Pizza pizza = pizzaDao.getProductById(id);
             if (session.getAttribute(SHOPPING_CART) == null) {
                 session.setAttribute(SHOPPING_CART, new HashMap<Pizza, Integer>());
                 shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute(SHOPPING_CART);

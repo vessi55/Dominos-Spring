@@ -14,8 +14,8 @@
 //@NoArgsConstructor
 //public class ShoppingCartViewDto {
 //    private double total_sum;
-////    private LocalDateTime order_time;
-////    private LocalDateTime delivery_time;
+//    private LocalDateTime order_time;
+//    private LocalDateTime delivery_time;
 //    private String status;
 //    private User user;
 //    private Restaurant restaurant;
