@@ -2,7 +2,6 @@ package dominos.demo.model.products;
 import dominos.demo.model.enums.Size;
 
 import java.util.Objects;
-import java.util.Set;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "pizzas")
-public class Pizza  {
+public class Pizza {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

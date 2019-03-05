@@ -5,13 +5,11 @@ import dominos.demo.model.daos.NonPizzaDao;
 import dominos.demo.model.DTOs.ShoppingCartViewDto;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.daos.ShoppingCartDao;
-import dominos.demo.model.products.NonPizza;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,16 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ShoppingCartController extends BaseController{
 
 
     public static final String SHOPPING_CART = "cart";
-    public static final String USER = "user";
 
     @Autowired
     PizzaDao pizzaDao;
