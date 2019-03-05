@@ -56,8 +56,8 @@ public class IngredientController extends BaseController {
         return new CommonResponseDTO("Product with id: " + id + " was removed! : ", LocalDateTime.now());
     }
 
-    @PutMapping(value = ("/product/{id}/quantity/{quantity}"))
-    public CommonResponseDTO updateProductQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws BaseException {
+    @PutMapping(value = ("/ingredients/{id}/quantity/{quantity}"))
+    public CommonResponseDTO updateIngredientQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws BaseException {
         SessionManager.validateLoginAdmin(session);
         if (quantity >= MIN_QUANTITY && quantity <= MAX_QUANTITY) {
             ingredientDao.changeIngredientQuantity(id, quantity);

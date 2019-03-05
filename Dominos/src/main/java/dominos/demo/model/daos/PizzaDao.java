@@ -1,5 +1,6 @@
 package dominos.demo.model.daos;
 
+import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Pizza;
@@ -8,6 +9,7 @@ import dominos.demo.model.repositories.PizzaRepository;
 import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;
+import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -85,9 +87,9 @@ public class PizzaDao {
         throw new InvalidInputException("Pizza with id:" + id + " does not exist in database.");
     }
     public Pizza getProductById(long id){
-        Optional<Pizza> ingredient = pizzaRepository.findById(id);
-        if (ingredient.isPresent()) {
-            return ingredient.get();
+        Optional<Pizza> pizza = pizzaRepository.findById(id);
+        if (pizza.isPresent()) {
+            return pizza.get();
         }
         else {
             return null;
@@ -108,4 +110,5 @@ public class PizzaDao {
         }
         throw new ProductException("The product does not exist! Please add it first!");
     }
+
 }

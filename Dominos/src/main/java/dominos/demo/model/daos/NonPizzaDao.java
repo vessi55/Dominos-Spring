@@ -3,6 +3,7 @@ package dominos.demo.model.daos;
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.enums.NonPizzaCategory;
 import dominos.demo.model.products.NonPizza;
+import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.NonPizzaRepository;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;
@@ -73,5 +74,14 @@ public class NonPizzaDao {
             return true;
         }
         throw new ProductException("The product does not exist! Please add it first!");
+    }
+    public NonPizza getProductById(long id){
+        Optional<NonPizza> product = nonPizzaRepository.findById(id);
+        if (product.isPresent()) {
+            return product.get();
+        }
+        else {
+            return null;
+        }
     }
 }
