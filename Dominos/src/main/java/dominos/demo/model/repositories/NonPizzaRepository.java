@@ -5,9 +5,7 @@ import dominos.demo.model.products.NonPizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import dominos.demo.model.products.Non_Pizza;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;;import java.util.List;
+;import java.util.List;
 import java.util.Optional;
 
 @Repository

@@ -93,13 +93,7 @@ public class PizzaDao {
             return null;
         }
     }
-
-
-
     //TODO dto for showing shopping cart ->view in dominos
-    //TODO : when add to db quantity make checker method for it
-
-    //TODO : add in DB quantity for pizzas non-pizzas and ingredients
 
     public void changePizzaQuantity(long id, int quantity) throws BaseException {
         if(checkIfPizzaExists(id)){

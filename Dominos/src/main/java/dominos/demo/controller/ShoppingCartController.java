@@ -8,6 +8,7 @@ import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +50,7 @@ public class ShoppingCartController extends BaseController{
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
+
 
     @PostMapping(value = ("/shoppingCart/order"))
     public CommonResponseDTO makeOrder(HttpSession session) throws BaseException {

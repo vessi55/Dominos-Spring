@@ -1,14 +1,17 @@
 package dominos.demo.model.daos;
 
+import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.repositories.PizzaRepository;
 import dominos.demo.model.users.User;
+import dominos.demo.util.exceptions.BaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+@Transactional(rollbackFor = BaseException.class)
 @Component
 public class ShoppingCartDao {
 
@@ -34,33 +38,20 @@ public class ShoppingCartDao {
     @Autowired
     OrderRepository orderRepository;
 
-    public void makeOrder(HttpSession session){
+    public CommonResponseDTO makeOrder(HttpSession session){
         HashMap<Pizza, Integer> shoppingCart = (HashMap<Pizza, Integer> )session.getAttribute(SHOPPING_CART);
-        //first check product quantity (method can throw an exception)
-        //maybe we can use a transaction -> get from catalogue and set it to user then quantity-1
-        //traverse the shopping cart and calculate price
         double price = calculatePrice(shoppingCart);
-        //get user from session
-        //someone we need to set attribute to session --->> user
         User user = (User) session.getAttribute(USER);
-        //create object Order andwe need to set values
         Order order = new Order();
         order.setTotal_sum(price);
         order.setOrder_time(LocalDateTime.now());
         order.setDelivery_time(LocalDateTime.now());
         order.setStatus("ready");
-        order.setUser(user);
-        //order.setRestaurant();
-        //save to table orders
-        //we need to save all orders for every client --> need new table for this
-        transactionTemplate.execute(new TransactionCallback<Object>() {
-            @Override
-            public Object doInTransaction(TransactionStatus status) {
-                orderRepository.save(order);
-                updateQuantity(shoppingCart);
-                return null;
-            }
-        });
+        order.setUser_id(user.getId());
+        //order.setRestaurant_id();
+        orderRepository.save(order);
+        updateQuantity(shoppingCart);
+        return new CommonResponseDTO("Successfull", LocalDateTime.now());
     }
 
     public double calculatePrice(HashMap<Pizza, Integer> products){

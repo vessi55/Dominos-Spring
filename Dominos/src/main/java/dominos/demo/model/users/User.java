@@ -24,9 +24,7 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin;
     private String phone;
-//    @OneToMany
-//    @JoinColumn(name="user_id")
     @JsonIgnore
-    @OneToMany(mappedBy = "id", orphanRemoval = true)
+    @OneToMany(mappedBy = "user_id", orphanRemoval = true)
     private Set<Order> myOrders = new HashSet<>();
 }
