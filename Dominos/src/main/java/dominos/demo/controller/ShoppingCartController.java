@@ -63,29 +63,7 @@ public class ShoppingCartController extends BaseController{
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
 
-    @PostMapping(value = ("/products/{id}/shoppingCart/add"))
-    public CommonResponseDTO addProductToShoppingCart(@PathVariable("id") long id, HttpSession session)
-            throws InvalidLogInException {
-        if(SessionManager.isLoggedIn(session)) {
-            HashMap<NonPizza, Integer> shoppingCart;
-            NonPizza nonPizza = nonPizzaDao.getProductById(id);
-            if (session.getAttribute(SHOPPING_CART) == null) {
-                session.setAttribute(SHOPPING_CART, new HashMap<NonPizza, Integer>());
-                shoppingCart = (HashMap<NonPizza, Integer>) session.getAttribute(SHOPPING_CART);
-                shoppingCart.put(nonPizza, 1);
-            } else {
-                shoppingCart = (HashMap<NonPizza, Integer>) session.getAttribute("cart");
-                if (!shoppingCart.containsKey(nonPizza)) {
-                    shoppingCart.put(nonPizza, 1);
-                }
-                shoppingCart.put(nonPizza, shoppingCart.get(nonPizza) + 1);
-            }
-            return new CommonResponseDTO("Product with name: " + nonPizza.getName() + " " +
-                    "is successfully added to your shopping cart!", LocalDateTime.now());
-        }
-        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
-    }
-
+    @GetMapping(value = "/myShoppingCart")
     public List<ShoppingCartViewDto> getMyShoppingCart(HttpSession session) throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
             if (session.getAttribute(SHOPPING_CART) != null) {
