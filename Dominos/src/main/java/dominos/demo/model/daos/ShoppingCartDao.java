@@ -1,6 +1,8 @@
 package dominos.demo.model.daos;
 
+import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.CommonResponseDTO;
+import dominos.demo.model.DTOs.ShoppingCartViewDto;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.OrderRepository;
@@ -14,10 +16,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Transactional(rollbackFor = BaseException.class)
@@ -25,12 +30,9 @@ import java.util.Map;
 public class ShoppingCartDao {
 
     public static final String SHOPPING_CART = "cart";
-    public static final String USER = "user";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    @Autowired
-    TransactionTemplate transactionTemplate;
 
     @Autowired
     PizzaRepository pizzaRepository;
@@ -38,51 +40,26 @@ public class ShoppingCartDao {
     @Autowired
     OrderRepository orderRepository;
 
-    public CommonResponseDTO makeOrder(HttpSession session){
-        HashMap<Pizza, Integer> shoppingCart = (HashMap<Pizza, Integer> )session.getAttribute(SHOPPING_CART);
-        double price = calculatePrice(shoppingCart);
-        User user = (User) session.getAttribute(USER);
-        Order order = new Order();
-        order.setTotal_sum(price);
-        order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(LocalDateTime.now());
-        order.setStatus("ready");
-        order.setUser_id(user.getId());
-        //order.setRestaurant_id();
-        orderRepository.save(order);
-        updateQuantity(shoppingCart);
-        return new CommonResponseDTO("Successfull", LocalDateTime.now());
-    }
 
-    public double calculatePrice(HashMap<Pizza, Integer> products){
-        double price = 0.0;
-        for(Map.Entry<Pizza, Integer> e : products.entrySet()){
-            double pizzaPrice = e.getKey().getPrice();
-            int quantity = e.getValue();
-            price += (pizzaPrice*quantity);
-        }
-        return price;
-    }
-    private void updateQuantity( HashMap<Pizza, Integer> products)  {
+    private void updateQuantity(HashMap<Pizza, Integer> products)  {
         for (Map.Entry<Pizza, Integer> e : products.entrySet()) {
             jdbcTemplate.update("UPDATE pizzas SET quantity = quantity - ? where id = ?", e.getValue(), e.getKey().getId());
         }
     }
-    //    public Stack<ShoppingCartViewDto> viewShoppingCart(HttpSession session, Order order){
-//        HashMap<Pizza, Integer> productsInCart = (HashMap<Pizza, Integer>)session.getAttribute(SHOPPING_CART);
-//        Stack<ShoppingCartViewDto> products= new Stack<ShoppingCartViewDto>();
-//        for(Map.Entry<Pizza, Integer> e : productsInCart.entrySet()){
-//            Pizza pizza = e.getKey();
-//            ShoppingCartViewDto shoppingCartViewDto = new ShoppingCartViewDto();
-//            shoppingCartViewDto.setTotal_sum(pizza.getPrice() * e.getValue());
-//            shoppingCartViewDto.setStatus(order.getStatus());
-//            shoppingCartViewDto.setRestaurant(order.getRestaurant());
-//            shoppingCartViewDto.setUser(order.getUser());
-//            products.add(shoppingCartViewDto);
-//        }
-//        return products;
-//
-//    }
+
+    public List<ShoppingCartViewDto> viewShoppingCart(HttpSession session) {
+        LinkedList<ShoppingCartViewDto> products = new LinkedList<>();
+        HashMap<Pizza, Integer> shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute(SHOPPING_CART);
+        for (Map.Entry<Pizza, Integer> entry : shoppingCart.entrySet()) {
+            ShoppingCartViewDto shoppingCartViewDto = new ShoppingCartViewDto();
+            shoppingCartViewDto.setPizzaName(entry.getKey().getName());
+            shoppingCartViewDto.setPizzaQuantity(entry.getValue());
+            shoppingCartViewDto.setPizzaPrice(entry.getKey().getPrice()*entry.getValue());
+            products.add(shoppingCartViewDto);
+        }
+        return products;
+    }
+
 
 
 }
