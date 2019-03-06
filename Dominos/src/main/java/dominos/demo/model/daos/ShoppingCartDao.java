@@ -53,9 +53,9 @@ public class ShoppingCartDao {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SHOPPING_CART);
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
             ShoppingCartViewDto shoppingCartViewDto = new ShoppingCartViewDto();
-            shoppingCartViewDto.setPizzaName(entry.getKey().getName());
-            shoppingCartViewDto.setPizzaQuantity(entry.getValue());
-            shoppingCartViewDto.setPizzaPrice(entry.getKey().getPrice()*entry.getValue());
+            shoppingCartViewDto.setName(entry.getKey().getName());
+            shoppingCartViewDto.setQuantity(entry.getValue());
+            shoppingCartViewDto.setPrice(entry.getKey().getPrice()*entry.getValue());
             products.add(shoppingCartViewDto);
         }
         return products;

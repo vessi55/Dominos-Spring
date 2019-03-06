@@ -1,16 +1,19 @@
 package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
+import dominos.demo.model.daos.IngredientDao;
 import dominos.demo.model.daos.NonPizzaDao;
 import dominos.demo.model.DTOs.ShoppingCartViewDto;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.daos.ShoppingCartDao;
+import dominos.demo.model.products.Ingredient;
 import dominos.demo.model.products.NonPizza;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.products.Product;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import dominos.demo.util.exceptions.InvalidLogInException;
+import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +24,10 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ShoppingCartController extends BaseController{
-
-
 
     @Autowired
     PizzaDao pizzaDao;
@@ -34,25 +36,14 @@ public class ShoppingCartController extends BaseController{
     NonPizzaDao nonPizzaDao;
 
     @Autowired
+    IngredientDao ingredientDao;
+
+    @Autowired
     ShoppingCartDao shoppingCartDao;
 
     public HashMap<Product, Integer> shoppingCart;
 
-
-    @PostMapping(value = ("/pizzas/{id}/quantity/{quantity}/shoppingCart/add"))
-    public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") int quantity,
-                                                    HttpSession session) throws InvalidLogInException {
-        if(SessionManager.isLoggedIn(session)) {
-            Pizza pizza = pizzaDao.getProductById(id);
-           this.addToShoppingCart(session, pizza,quantity);
-            //TODO: fix message
-            return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
-                    "added to your shopping cart!", LocalDateTime.now() );
-        }
-        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
-    }
-
-    public HashMap<Product, Integer> addToShoppingCart(HttpSession session, Product product, int quantity){
+    public HashMap<Product, Integer> addToShoppingCart(HttpSession session, Product product, Integer quantity){
         if (session.getAttribute(SessionManager.SHOPPING_CART) == null) {
             session.setAttribute(SessionManager.SHOPPING_CART, new HashMap<Product, Integer>());
         }
@@ -66,14 +57,49 @@ public class ShoppingCartController extends BaseController{
         return shoppingCart;
     }
 
-    @PostMapping(value = ("/products/{id}/quantity/{quantity}/shoppingCart/add"))
-    public CommonResponseDTO addProductToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") int quantity,
-                                                    HttpSession session) throws InvalidLogInException {
+    @PostMapping(value = ("/pizzas/{id}/quantity/{quantity}/shoppingCart/add"))
+    public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+                                                    HttpSession session) throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            NonPizza product = nonPizzaDao.getProductById(id);
-            this.addToShoppingCart(session, product,quantity);
-            //TODO:fix message
-            return new CommonResponseDTO("Product " + product.getName() + " - " + quantity + " is successfully " +
+            Pizza pizza = pizzaDao.getProductById(id);
+            if(pizza == null) {
+                throw new ProductException("Pizza with id:" +id + " does not exist in database!");
+            }
+            this.addToShoppingCart(session, pizza,quantity);
+            //TODO: fix message
+            return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
+                    "added to your shopping cart!", LocalDateTime.now() );
+        }
+        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
+    }
+
+
+    @PostMapping(value = ("/products/{id}/quantity/{quantity}/shoppingCart/add"))
+    public CommonResponseDTO addProductToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+                                                    HttpSession session) throws BaseException {
+        if(SessionManager.isLoggedIn(session)) {
+            NonPizza nonPizza = nonPizzaDao.getProductById(id);
+            if(nonPizza == null) {
+                throw new ProductException("Product with id:" +id + " does not exist in database!");
+            }
+            this.addToShoppingCart(session, nonPizza,quantity);
+            //TODO: fix message
+            return new CommonResponseDTO("Product " + nonPizza.getName() + " - " + quantity + " is successfully " +
+                    "added to your shopping cart!", LocalDateTime.now());
+        }
+        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
+    }
+
+    @PostMapping(value = ("/ingredients/{id}/quantity/{quantity}/shoppingCart/add"))
+    public CommonResponseDTO addIngredientToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+                                                      HttpSession session) throws BaseException {
+        if(SessionManager.isLoggedIn(session)) {
+            Ingredient ingredient = ingredientDao.getIngredientById(id);
+            if(ingredient == null) {
+                throw new ProductException("Ingredient with id:" +id + " does not exist in database!");
+            }
+            this.addToShoppingCart(session, ingredient,quantity);
+            return new CommonResponseDTO("Ingredient " + ingredient.getName() + " - " + quantity + " is successfully " +
                     "added to your shopping cart!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");

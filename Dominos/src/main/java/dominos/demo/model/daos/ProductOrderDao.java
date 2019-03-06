@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class PizzaOrderDao {
+public class ProductOrderDao {
 
     @Autowired
     AddressDao addressDao;
@@ -44,21 +44,21 @@ public class PizzaOrderDao {
         }
         return price;
     }
-    public void orderProductFromRestaurant(long restaurant_id, HttpSession session)  {
+    public void orderProductFromRestaurant(long restaurant_id, LocalDateTime delivery_time, HttpSession session)  {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>)session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         double total_sum = calculatePrice(shoppingCart);
         Order order = new Order();
         order.setTotal_sum(total_sum);
         order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(LocalDateTime.now()); // TODO: Find way to parse LocalDateTime to String
+        order.setDelivery_time(delivery_time); // TODO: Find way to parse LocalDateTime to String
         order.setStatus("ready"); //TODO : Thread to changeStatus
         order.setUser_id(user.getId());
         order.setRestaurant_id(restaurant_id);
         orderRepository.save(order);
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
             long productId = entry.getKey().getId();
-            int quantity = entry.getValue();
+            Integer quantity = entry.getValue();
             entry.getKey().insertIntoTable(jdbcTemplate,productId,order.getId(),quantity);
             SessionManager.SHOPPING_CART = null;
         }
@@ -88,7 +88,7 @@ public class PizzaOrderDao {
         orderRepository.save(order);
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()){
             long pizzaId = entry.getKey().getId();
-            int quantity = entry.getValue();
+            Integer quantity = entry.getValue();
             jdbcTemplate.update("INSERT INTO pizza_orders (pizza_id, order_id, quantity) VALUES (?,?,?)",
                     pizzaId,order.getId(),quantity);
         }

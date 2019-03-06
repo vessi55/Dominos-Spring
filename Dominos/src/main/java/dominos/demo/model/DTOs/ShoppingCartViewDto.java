@@ -13,11 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class ShoppingCartViewDto {
-    private String pizzaName;
-    private int pizzaQuantity;
-    private double pizzaPrice;
-    // TODO shopping cart with non pizzas !!
-//    private NonPizza nonPizza;
-//    private int nonPizzaQuantity;
-//    private double nonPizzaPrice;
+    private String name;
+    private int quantity;
+    private double price;
 }

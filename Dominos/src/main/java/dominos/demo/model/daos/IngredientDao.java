@@ -32,9 +32,21 @@ public class IngredientDao {
     public List<Ingredient> getAllIngredients(){
         return ingredientRepository.findAll();
     }
-    public Optional<Ingredient> getIngredientById(long id){
+
+    public Optional<Ingredient> getById(long id){
         return ingredientRepository.findById(id);
     }
+
+    public Ingredient getIngredientById(long id){
+        Optional<Ingredient> product = ingredientRepository.findById(id);
+        if (product.isPresent()) {
+            return product.get();
+        }
+        else {
+            return null;
+        }
+    }
+
     public List<Ingredient> getAllByIngredientCategory(IngredientCategory category){
         return ingredientRepository.findAllByIngredientCategory(category);
     }

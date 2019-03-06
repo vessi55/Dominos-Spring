@@ -43,14 +43,6 @@ public class PizzaDao {
     @Autowired
     PizzaRepository pizzaRepository;
 
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
-    @Autowired
-    TransactionTemplate transactionTemplate;
 
     public void addPizza(Pizza pizza){
         pizzaRepository.save(pizza);
@@ -86,6 +78,7 @@ public class PizzaDao {
         }
         throw new InvalidInputException("Pizza with id:" + id + " does not exist in database.");
     }
+
     public Pizza getProductById(long id){
         Optional<Pizza> pizza = pizzaRepository.findById(id);
         if (pizza.isPresent()) {

@@ -4,8 +4,10 @@ import dominos.demo.model.enums.IngredientCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -13,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ingredients")
 
-public class Ingredient {
+public class Ingredient extends Product{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,6 +24,28 @@ public class Ingredient {
     @Column(name = "category",length = 20)
     private IngredientCategory ingredientCategory;
     private double price;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return id == that.id &&
+                Double.compare(that.price, price) == 0 &&
+                Objects.equals(name, that.name) &&
+                ingredientCategory == that.ingredientCategory;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, ingredientCategory, price);
+    }
+
+    @Override
+    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long ingredientId, int quantity) {
+        jdbcTemplate.update("INSERT INTO pizza_ingredients (pizza_id, ingredient_id, quantity) VALUES (?,?,?)",
+                productId, ingredientId, quantity);
+    }
 }
 
 

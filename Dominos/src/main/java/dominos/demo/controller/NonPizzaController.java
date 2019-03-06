@@ -108,7 +108,7 @@ public class NonPizzaController extends BaseController {
     }
 
     private void validateNonPizzaInput(NonPizza nonPizza)throws InvalidInputException {
-        if(nonPizza.getName().isEmpty() || nonPizza.getPrice() < 0 || nonPizza.getQuantity() < 0){
+        if(nonPizza.getName().isEmpty() || nonPizza.getPrice() < 0 || nonPizza.getMeasure() < 0){
             throw new InvalidInputException("Invalid input for the product. Please try again! All fields must be filled in!");
         }
     }

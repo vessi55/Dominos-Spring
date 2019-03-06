@@ -23,7 +23,7 @@ public class NonPizza extends Product{
     @Column(length = 20)
     private NonPizzaCategory category;
     private double price;
-    private double quantity;
+    private double measure;
     private String image_url;
 
     @Override
@@ -33,7 +33,7 @@ public class NonPizza extends Product{
         NonPizza nonPizza = (NonPizza) o;
         return id == nonPizza.id &&
                 Double.compare(nonPizza.price, price) == 0 &&
-                Double.compare(nonPizza.quantity, quantity) == 0 &&
+                Double.compare(nonPizza.measure, measure) == 0 &&
                 Objects.equals(name, nonPizza.name) &&
                 category == nonPizza.category &&
                 Objects.equals(image_url, nonPizza.image_url);
@@ -41,7 +41,7 @@ public class NonPizza extends Product{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, category, price, quantity, image_url);
+        return Objects.hash(id, name, category, price, measure, image_url);
     }
     @Override
     public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long order_id, int quantity) {

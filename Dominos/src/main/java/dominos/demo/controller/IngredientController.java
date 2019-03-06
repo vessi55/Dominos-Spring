@@ -40,7 +40,7 @@ public class IngredientController extends BaseController {
 
     @GetMapping(value = "/ingredients/id")
     public Optional<Ingredient> getIngredientById(@RequestParam("id") Long id) throws BaseException {
-        Optional<Ingredient> product = ingredientDao.getIngredientById(id);
+        Optional<Ingredient> product = ingredientDao.getById(id);
         if(product.isPresent()) {
             return product;
         }
@@ -85,6 +85,4 @@ public class IngredientController extends BaseController {
                     "Invalid input for the product.Please try again! All fields must be filled in!");
         }
     }
-
-
 }
