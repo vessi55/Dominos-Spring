@@ -3,6 +3,8 @@ package dominos.demo.model.daos;
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.orders.Order;
+import dominos.demo.model.products.Ingredient;
+import dominos.demo.model.products.NonPizza;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.repositories.PizzaRepository;
@@ -22,10 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class PizzaDao {
@@ -102,6 +101,21 @@ public class PizzaDao {
             return true;
         }
         throw new ProductException("The product does not exist! Please add it first!");
+    }
+
+    public double calculatePizzaPrice(HashMap<Pizza, HashSet<Ingredient>> pizzaExtras){
+        double pizzaPrice = 0.0;
+        for (Map.Entry<Pizza, HashSet<Ingredient>> e : pizzaExtras.entrySet() ) {
+            pizzaPrice = e.getKey().getPrice();
+            if (e.getValue() != null) {
+                double ingredientPrice = 0.0;
+                for (Ingredient ingr : e.getValue()) {
+                    ingredientPrice += ingr.getPrice();
+                }
+                pizzaPrice += ingredientPrice;
+            }
+        }
+        return pizzaPrice;
     }
 
 }

@@ -1,7 +1,9 @@
 package dominos.demo.model.products;
 import dominos.demo.model.enums.Size;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +31,7 @@ public class Pizza extends Product{
     private Size size;
     private double weight;
     private String image_url;
-
+    //private HashSet<Ingredient> ingredients;
 
     @Override
     public boolean equals(Object o) {

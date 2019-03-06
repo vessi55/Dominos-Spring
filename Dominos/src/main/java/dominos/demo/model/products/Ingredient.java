@@ -15,7 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "ingredients")
 
-public class Ingredient extends Product{
+public class Ingredient{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -41,11 +41,11 @@ public class Ingredient extends Product{
         return Objects.hash(id, name, ingredientCategory, price);
     }
 
-    @Override
-    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long ingredientId, int quantity) {
-        jdbcTemplate.update("INSERT INTO pizza_ingredients (pizza_id, ingredient_id, quantity) VALUES (?,?,?)",
-                productId, ingredientId, quantity);
-    }
+//    @Override
+//    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long ingredientId, int quantity) {
+//        jdbcTemplate.update("INSERT INTO pizza_ingredients (pizza_id, ingredient_id, quantity) VALUES (?,?,?)",
+//                productId, ingredientId, quantity);
+//    }
 }
 
 

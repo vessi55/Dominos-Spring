@@ -19,12 +19,12 @@ public class OrderController extends BaseController {
 
 
     @PostMapping(value ="/order/restaurants/id")
-    public CommonResponseDTO finishOrderForPizzaFromRestaurant(@RequestParam ("id") Long restaurant_id,
-                                                              @RequestParam (name = "delivery_time") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                                      LocalDateTime delivery_time, HttpSession session)
+    public CommonResponseDTO finishOrderForPizzaFromRestaurant(@RequestParam ("id") Long restaurant_id
+                                                              /*@RequestParam (name = "delivery_time") )
+                                                                      LocalDateTime delivery_time*/, HttpSession session)
     throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            pizzaOrderDao.orderProductFromRestaurant(restaurant_id, delivery_time, session);
+            pizzaOrderDao.orderProductFromRestaurant(restaurant_id, session);
             return new CommonResponseDTO("Successfull order!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");

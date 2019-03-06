@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +63,11 @@ public class ShoppingCartController extends BaseController{
             if(pizza == null) {
                 throw new ProductException("Pizza with id:" +id + " does not exist in database!");
             }
-            this.addToShoppingCart(session, pizza,quantity);
+            HashMap<Pizza, HashSet<Ingredient>> pizzaExtras = (HashMap<Pizza, HashSet<Ingredient>>)session.getAttribute("ingredients");
+//            if(pizzaExtras.containsKey(pizza)) {
+            pizza.setPrice(pizzaDao.calculatePizzaPrice(pizzaExtras));
+//            }
+                this.addToShoppingCart(session, pizza, quantity);
             //TODO: fix message
             return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
                     "added to your shopping cart!", LocalDateTime.now() );

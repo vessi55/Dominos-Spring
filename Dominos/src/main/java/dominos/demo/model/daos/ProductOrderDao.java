@@ -4,6 +4,7 @@ import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.AddressResponseDTO;
 import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
+import dominos.demo.model.products.Ingredient;
 import dominos.demo.model.products.NonPizza;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.products.Product;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -44,14 +46,15 @@ public class ProductOrderDao {
         }
         return price;
     }
-    public void orderProductFromRestaurant(long restaurant_id, LocalDateTime delivery_time, HttpSession session)  {
+
+    public void orderProductFromRestaurant(long restaurant_id, HttpSession session)  {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>)session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         double total_sum = calculatePrice(shoppingCart);
         Order order = new Order();
         order.setTotal_sum(total_sum);
         order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(delivery_time); // TODO: Find way to parse LocalDateTime to String
+        order.setDelivery_time(LocalDateTime.now()); // TODO: Find way to parse LocalDateTime to String
         order.setStatus("Pending"); //TODO : Thread to changeStatus
         order.setUser_id(user.getId());
         order.setRestaurant_id(restaurant_id);
