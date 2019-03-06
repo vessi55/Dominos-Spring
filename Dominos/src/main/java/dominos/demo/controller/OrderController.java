@@ -1,13 +1,10 @@
 package dominos.demo.controller;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.PizzaOrderDao;
-import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -26,7 +23,7 @@ public class OrderController extends BaseController {
                                                               HttpSession session)
     throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            pizzaOrderDao.orderPizzaFromRestaurant(restaurant_id, session);
+            pizzaOrderDao.orderProductFromRestaurant(restaurant_id, session);
             return new CommonResponseDTO("Successfull order!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");

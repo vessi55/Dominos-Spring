@@ -5,7 +5,9 @@ import dominos.demo.model.daos.NonPizzaDao;
 import dominos.demo.model.DTOs.ShoppingCartViewDto;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.daos.ShoppingCartDao;
+import dominos.demo.model.products.NonPizza;
 import dominos.demo.model.products.Pizza;
+import dominos.demo.model.products.Product;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import dominos.demo.util.exceptions.InvalidLogInException;
@@ -24,7 +26,6 @@ import java.util.List;
 public class ShoppingCartController extends BaseController{
 
 
-    public static final String SHOPPING_CART = "cart";
 
     @Autowired
     PizzaDao pizzaDao;
@@ -35,24 +36,44 @@ public class ShoppingCartController extends BaseController{
     @Autowired
     ShoppingCartDao shoppingCartDao;
 
+    public HashMap<Product, Integer> shoppingCart;
+
 
     @PostMapping(value = ("/pizzas/{id}/quantity/{quantity}/shoppingCart/add"))
     public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") int quantity,
                                                     HttpSession session) throws InvalidLogInException {
         if(SessionManager.isLoggedIn(session)) {
-            HashMap<Pizza, Integer> shoppingCart;
             Pizza pizza = pizzaDao.getProductById(id);
-            if (session.getAttribute(SHOPPING_CART) == null) {
-                session.setAttribute(SHOPPING_CART, new HashMap<Pizza, Integer>());
-            }
-            shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute(SHOPPING_CART);
-            if (!shoppingCart.containsKey(pizza)) {
-                shoppingCart.put(pizza, quantity);
-            }
-            else {
-                shoppingCart.put(pizza, shoppingCart.get(pizza) + quantity);
-            }
-            return new CommonResponseDTO("Pizza " + pizza.getName() + " is successfully " +
+           this.addToShoppingCart(session, pizza,quantity);
+            //TODO: fix message
+            return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
+                    "added to your shopping cart!", LocalDateTime.now() );
+        }
+        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
+    }
+
+    public HashMap<Product, Integer> addToShoppingCart(HttpSession session, Product product, int quantity){
+        if (session.getAttribute(SessionManager.SHOPPING_CART) == null) {
+            session.setAttribute(SessionManager.SHOPPING_CART, new HashMap<Product, Integer>());
+        }
+        shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
+        if (!shoppingCart.containsKey(product)) {
+            shoppingCart.put(product, quantity);
+        }
+        else {
+            shoppingCart.put(product, shoppingCart.get(product) + quantity);
+        }
+        return shoppingCart;
+    }
+
+    @PostMapping(value = ("/products/{id}/quantity/{quantity}/shoppingCart/add"))
+    public CommonResponseDTO addProductToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") int quantity,
+                                                    HttpSession session) throws InvalidLogInException {
+        if(SessionManager.isLoggedIn(session)) {
+            NonPizza product = nonPizzaDao.getProductById(id);
+            this.addToShoppingCart(session, product,quantity);
+            //TODO:fix message
+            return new CommonResponseDTO("Product " + product.getName() + " - " + quantity + " is successfully " +
                     "added to your shopping cart!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
@@ -61,7 +82,7 @@ public class ShoppingCartController extends BaseController{
     @GetMapping(value = "/myShoppingCart")
     public List<ShoppingCartViewDto> getMyShoppingCart(HttpSession session) throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            if (session.getAttribute(SHOPPING_CART) != null) {
+            if (session.getAttribute(SessionManager.SHOPPING_CART) != null) {
                 return shoppingCartDao.viewShoppingCart(session);
             } else {
                 throw new EmptyShoppingCartException("Your shopping cart is empty!");

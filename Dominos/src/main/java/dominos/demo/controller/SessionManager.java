@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 public class SessionManager {
 
     public static final String LOGGED = "logged";
+    public static  String SHOPPING_CART = "cart";
+
 
     public static boolean isLoggedIn(HttpSession session) {
         if(session.isNew() || session.getAttribute(LOGGED) == null) {

@@ -5,6 +5,7 @@ import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.DTOs.ShoppingCartViewDto;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Pizza;
+import dominos.demo.model.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.repositories.PizzaRepository;
 import dominos.demo.model.users.User;
@@ -49,8 +50,8 @@ public class ShoppingCartDao {
 
     public List<ShoppingCartViewDto> viewShoppingCart(HttpSession session) {
         LinkedList<ShoppingCartViewDto> products = new LinkedList<>();
-        HashMap<Pizza, Integer> shoppingCart = (HashMap<Pizza, Integer>) session.getAttribute(SHOPPING_CART);
-        for (Map.Entry<Pizza, Integer> entry : shoppingCart.entrySet()) {
+        HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SHOPPING_CART);
+        for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
             ShoppingCartViewDto shoppingCartViewDto = new ShoppingCartViewDto();
             shoppingCartViewDto.setPizzaName(entry.getKey().getName());
             shoppingCartViewDto.setPizzaQuantity(entry.getValue());
