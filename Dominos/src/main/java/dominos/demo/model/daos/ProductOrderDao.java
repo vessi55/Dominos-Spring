@@ -52,7 +52,7 @@ public class ProductOrderDao {
         order.setTotal_sum(total_sum);
         order.setOrder_time(LocalDateTime.now());
         order.setDelivery_time(delivery_time); // TODO: Find way to parse LocalDateTime to String
-        order.setStatus("ready"); //TODO : Thread to changeStatus
+        order.setStatus("Pending"); //TODO : Thread to changeStatus
         order.setUser_id(user.getId());
         order.setRestaurant_id(restaurant_id);
         orderRepository.save(order);
@@ -68,29 +68,31 @@ public class ProductOrderDao {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>)session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         List<AddressResponseDTO> addresses = addressDao.getAllUserAddresses(user.getId());
+        System.out.println(addresses);
         double total_sum = calculatePrice(shoppingCart);
         Order order = new Order();
         order.setTotal_sum(total_sum);
         order.setOrder_time(LocalDateTime.now());
         order.setDelivery_time(LocalDateTime.now().plusMinutes(15));
-        order.setStatus("ready");
+        order.setStatus("Pending");
         order.setUser_id(user.getId());
         order.setRestaurant_id(null);
         for(AddressResponseDTO a : addresses){
+            System.out.println(a.getCity());
+            System.out.println(a.getStreet());
             if(a.getCity().equals(city) && a.getStreet().equals(street)){
                 order.setDelivery_city(city);
                 order.setDelivery_street(street);
             }
-            else{
-                throw new InvalidAddressException("Address does not exist! Please add it!");
-            }
+        }
+        if(order.getDelivery_city() == null && order.getDelivery_street() == null) {
+            throw new InvalidAddressException("Invalid address!");
         }
         orderRepository.save(order);
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()){
-            long pizzaId = entry.getKey().getId();
+            long productId = entry.getKey().getId();
             Integer quantity = entry.getValue();
-            jdbcTemplate.update("INSERT INTO pizza_orders (pizza_id, order_id, quantity) VALUES (?,?,?)",
-                    pizzaId,order.getId(),quantity);
+            entry.getKey().insertIntoTable(jdbcTemplate,productId,order.getId(),quantity);
         }
     }
 

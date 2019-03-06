@@ -11,4 +11,9 @@ public class AddressResponseDTO {
 
     private String city;
     private String street;
+
+    @Override
+    public String toString() {
+        return city + " " + street;
+    }
 }

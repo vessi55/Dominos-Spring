@@ -15,10 +15,7 @@ import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
@@ -73,7 +70,6 @@ public class ShoppingCartController extends BaseController{
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
 
-
     @PostMapping(value = ("/products/{id}/quantity/{quantity}/shoppingCart/add"))
     public CommonResponseDTO addProductToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
                                                     HttpSession session) throws BaseException {
@@ -90,20 +86,46 @@ public class ShoppingCartController extends BaseController{
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
 
-    @PostMapping(value = ("/ingredients/{id}/quantity/{quantity}/shoppingCart/add"))
-    public CommonResponseDTO addIngredientToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
-                                                      HttpSession session) throws BaseException {
-        if(SessionManager.isLoggedIn(session)) {
-            Ingredient ingredient = ingredientDao.getIngredientById(id);
-            if(ingredient == null) {
-                throw new ProductException("Ingredient with id:" +id + " does not exist in database!");
+
+    public void removeFromShoppingCart(Product product, int quantity, HttpSession session) throws BaseException{
+        shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
+        if (!shoppingCart.isEmpty()) {
+            if (shoppingCart.containsKey(product)) {
+                if(shoppingCart.get(product) == 1) {
+                    shoppingCart.remove(product);
+                }
+                shoppingCart.put(product, shoppingCart.get(product) - quantity);
             }
-            this.addToShoppingCart(session, ingredient,quantity);
-            return new CommonResponseDTO("Ingredient " + ingredient.getName() + " - " + quantity + " is successfully " +
-                    "added to your shopping cart!", LocalDateTime.now());
+        }
+        else {
+            throw new EmptyShoppingCartException("Your shopping cart is empty!");
+        }
+    }
+
+    @DeleteMapping(value = ("/pizzas/{id}/quantity/{quantity}/shoppingCart/remove"))
+    public CommonResponseDTO removePizzaFromShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+                                                    HttpSession session) throws BaseException {
+        if(SessionManager.isLoggedIn(session)) {
+            Pizza pizza = pizzaDao.getProductById(id);
+            this.removeFromShoppingCart(pizza, quantity, session);
+            return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
+                    "removed from your shopping cart!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
+
+    @DeleteMapping(value = ("/products/{id}/quantity/{quantity}/shoppingCart/remove"))
+    public CommonResponseDTO removeProductFromShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+                                                         HttpSession session) throws BaseException {
+        if(SessionManager.isLoggedIn(session)) {
+            NonPizza nonPizza = nonPizzaDao.getProductById(id);
+            this.removeFromShoppingCart(nonPizza, quantity, session);
+            return new CommonResponseDTO("Product " + nonPizza.getName() + " - " + quantity + " is successfully " +
+                    "removed from your shopping cart!", LocalDateTime.now());
+        }
+        throw new InvalidLogInException("You are not logged in! Please log in to continue!");
+    }
+
 
     @GetMapping(value = "/myShoppingCart")
     public List<ShoppingCartViewDto> getMyShoppingCart(HttpSession session) throws BaseException {
