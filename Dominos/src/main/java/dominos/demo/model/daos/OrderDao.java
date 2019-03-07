@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class ProductOrderDao {
+public class OrderDao {
 
     @Autowired
     AddressDao addressDao;

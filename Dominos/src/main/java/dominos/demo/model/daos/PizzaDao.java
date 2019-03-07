@@ -19,6 +19,7 @@ public class PizzaDao {
 
     private static final String UPDATE_QUANTITY = "UPDATE pizzas SET quantity= ? WHERE id = ?";
 
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -48,6 +49,16 @@ public class PizzaDao {
         return pizzaRepository.findById(aLong);
     }
 
+    public Pizza getProductById(long id){
+        Optional<Pizza> pizza = pizzaRepository.findById(id);
+        if (pizza.isPresent()) {
+            return pizza.get();
+        }
+        else {
+            return null;
+        }
+    }
+
     public Optional<Pizza> getByNameAndSize(String name, Size size){
         return pizzaRepository.findByNameAndSize(name, size);
     }
@@ -61,15 +72,6 @@ public class PizzaDao {
         throw new InvalidInputException("Pizza with id:" + id + " does not exist in database.");
     }
 
-    public Pizza getProductById(long id){
-        Optional<Pizza> pizza = pizzaRepository.findById(id);
-        if (pizza.isPresent()) {
-            return pizza.get();
-        }
-        else {
-            return null;
-        }
-    }
     public void changePizzaQuantity(long id, int quantity) throws BaseException {
         if(checkIfPizzaExists(id)){
             jdbcTemplate.update(UPDATE_QUANTITY, quantity, id);

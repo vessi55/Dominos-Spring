@@ -21,7 +21,7 @@ import java.util.Optional;
 @RestController
 public class PizzaImageController extends BaseController{
 
-    public static final String IMAGE_DIR = "B:\\Dominos\\Menu";
+    public static final String IMAGE_DIR = "B:\\Dominos\\";
 
     @Autowired
     private PizzaDao pizzaDao;
