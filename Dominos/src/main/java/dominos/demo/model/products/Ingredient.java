@@ -1,5 +1,6 @@
 package dominos.demo.model.products;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dominos.demo.model.enums.IngredientCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.Objects;
 public class Ingredient{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private long id;
     private String name;
     @Enumerated(EnumType.STRING)

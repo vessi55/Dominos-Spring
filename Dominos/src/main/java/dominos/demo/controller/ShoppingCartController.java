@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class ShoppingCartController extends BaseController{
@@ -41,35 +40,31 @@ public class ShoppingCartController extends BaseController{
 
     public HashMap<Product, Integer> shoppingCart;
 
-    public HashMap<Product, Integer> addToShoppingCart(HttpSession session, Product product, Integer quantity){
+
+    public void addProductToShoppingCart(HttpSession session, Product product, Integer quantity) {
         if (session.getAttribute(SessionManager.SHOPPING_CART) == null) {
             session.setAttribute(SessionManager.SHOPPING_CART, new HashMap<Product, Integer>());
         }
         shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
+
         if (!shoppingCart.containsKey(product)) {
             shoppingCart.put(product, quantity);
-        }
-        else {
+        } else {
             shoppingCart.put(product, shoppingCart.get(product) + quantity);
         }
-        return shoppingCart;
     }
 
-    @PostMapping(value = ("/pizzas/{id}/quantity/{quantity}/shoppingCart/add"))
-    public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("id") long id, @PathVariable("quantity") Integer quantity,
+    @PostMapping(value = ("/pizzas/quantity/{quantity}/shoppingCart/add"))
+    public CommonResponseDTO addPizzaToShoppingCart(@PathVariable("quantity") Integer quantity,
                                                     HttpSession session) throws BaseException {
+        Pizza pizza = (Pizza)session.getAttribute(SessionManager.PIZZA);
+        HashMap<Pizza, HashSet<Ingredient>> pizzaExtras =
+                (HashMap<Pizza, HashSet<Ingredient>>)session.getAttribute(SessionManager.PIZZA_INGREDIENTS);
         if(SessionManager.isLoggedIn(session)) {
-            Pizza pizza = pizzaDao.getProductById(id);
-            if(pizza == null) {
-                throw new ProductException("Pizza with id:" +id + " does not exist in database!");
-            }
-            HashMap<Pizza, HashSet<Ingredient>> pizzaExtras = (HashMap<Pizza, HashSet<Ingredient>>)session.getAttribute("ingredients");
-//            if(pizzaExtras.containsKey(pizza)) {
             pizza.setPrice(pizzaDao.calculatePizzaPrice(pizzaExtras));
-//            }
-                this.addToShoppingCart(session, pizza, quantity);
-            //TODO: fix message
-            return new CommonResponseDTO("Pizza " + pizza.getName() + " - " + quantity + " is successfully " +
+            this.addProductToShoppingCart(session, pizza, quantity);
+            return new CommonResponseDTO("Pizza " + pizza.getName() + " with quantity "
+                    + quantity + " is successfully " +
                     "added to your shopping cart!", LocalDateTime.now() );
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
@@ -83,8 +78,7 @@ public class ShoppingCartController extends BaseController{
             if(nonPizza == null) {
                 throw new ProductException("Product with id:" +id + " does not exist in database!");
             }
-            this.addToShoppingCart(session, nonPizza,quantity);
-            //TODO: fix message
+            this.addProductToShoppingCart(session, nonPizza,quantity);
             return new CommonResponseDTO("Product " + nonPizza.getName() + " - " + quantity + " is successfully " +
                     "added to your shopping cart!", LocalDateTime.now());
         }

@@ -42,7 +42,7 @@ public class UserController extends BaseController {
             //SessionManager.logUser(session,user);
         }
         return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
-                user.getEmail(), new Date());
+                user.getEmail(), LocalDateTime.now());
     }
 
     @PostMapping(value = "/login")
@@ -56,7 +56,7 @@ public class UserController extends BaseController {
             }
             SessionManager.logUser(session, user);
             return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
-                    user.getEmail(), new Date());
+                    user.getEmail(), LocalDateTime.now());
         }
         throw new InvalidLogInException("You are already logged in!");
     }

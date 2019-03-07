@@ -1,9 +1,11 @@
 package dominos.demo.model.orders;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dominos.demo.model.restaurants.Restaurant;
 import dominos.demo.model.users.User;
@@ -25,7 +27,8 @@ public class Order {
     private long id;
     private double total_sum;
     private LocalDateTime order_time;
-    private LocalDateTime delivery_time;
+    @JsonFormat(pattern = "THH:mm")
+    private LocalTime delivery_time;
     private String status;
     private String delivery_city;
     private String delivery_street;

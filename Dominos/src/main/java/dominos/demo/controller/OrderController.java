@@ -5,11 +5,11 @@ import dominos.demo.model.daos.ProductOrderDao;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RestController
 public class OrderController extends BaseController {
@@ -19,12 +19,12 @@ public class OrderController extends BaseController {
 
 
     @PostMapping(value ="/order/restaurants/id")
-    public CommonResponseDTO finishOrderForPizzaFromRestaurant(@RequestParam ("id") Long restaurant_id
-                                                              /*@RequestParam (name = "delivery_time") )
-                                                                      LocalDateTime delivery_time*/, HttpSession session)
+    public CommonResponseDTO finishOrderForPizzaFromRestaurant(@RequestParam ("id") Long restaurant_id,
+                                                               @RequestParam ("delivery_time")
+                                                                       LocalTime delivery_time, HttpSession session)
     throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            pizzaOrderDao.orderProductFromRestaurant(restaurant_id, session);
+            pizzaOrderDao.orderProductFromRestaurant(restaurant_id, session, delivery_time);
             return new CommonResponseDTO("Successfull order!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
