@@ -115,10 +115,26 @@ public class PizzaController extends BaseController{
        if (!ingredients.contains(ingredient)) {
            pizzaExtras.get(pizza).add(ingredient);
        }
-       return new IngredientResponseDto(pizza.getName(), pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
+       return new IngredientResponseDto(ingredient.getName(),pizza.getName(), pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
                ingredients);
 
    }
+    @DeleteMapping(value = "/pizza/deleteIngredients/{ingredient_id}")
+    public IngredientResponseDto deleteIngredientsFromPizza( @PathVariable("ingredient_id") long ingredient_id, HttpSession session) throws BaseException {
+        Pizza pizza = (Pizza) session.getAttribute(SessionManager.PIZZA);
+        Ingredient ingredient = ingredientDao.getIngredientById(ingredient_id);
+        HashMap<Pizza, HashSet<Ingredient>> pizzaExtras =
+                (HashMap<Pizza, HashSet<Ingredient>>) session.getAttribute(SessionManager.PIZZA_INGREDIENTS);
+        HashSet<Ingredient> ingredients = pizzaExtras.get(pizza);
+        if (ingredients.contains(ingredient)) {
+            pizzaExtras.get(pizza).remove(ingredient);
+        }
+
+        return new IngredientResponseDto(ingredient.getName(),pizza.getName(),
+                pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
+                ingredients);
+
+    }
 
     //VIEW PIZZA
     @GetMapping(value = "/pizzas/{id}")

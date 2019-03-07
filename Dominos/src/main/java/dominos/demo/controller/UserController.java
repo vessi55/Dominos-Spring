@@ -5,6 +5,7 @@ import dominos.demo.model.DTOs.*;
 import dominos.demo.model.daos.UserDao;
 import dominos.demo.model.repositories.UserRepository;
 import dominos.demo.model.users.User;
+import dominos.demo.util.BCryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import dominos.demo.util.exceptions.BaseException;
@@ -37,7 +38,7 @@ public class UserController extends BaseController {
             user.setFirst_name(regUser.getFirst_name());
             user.setLast_name(regUser.getLast_name());
             user.setEmail(regUser.getEmail());
-            user.setPassword(regUser.getPassword());
+            user.setPassword(BCryptUtil.hashPassword(regUser.getPassword()));
             userRepository.save(user);
             //SessionManager.logUser(session,user);
         }
@@ -50,8 +51,8 @@ public class UserController extends BaseController {
         if(!(SessionManager.isLoggedIn(session))&& validateLogIn(login)){
             String email = login.getEmail();
             String password = login.getPassword();
-            User user = userDao.getUserByEmailAndPassword(email, password);
-            if(user == null){
+            User user = userDao.getUserByEmail(email);
+            if(user == null || !BCryptUtil.checkPass(password,user.getPassword())){
                 throw new InvalidLogInException("User with this email does not exist!");
             }
             SessionManager.logUser(session, user);

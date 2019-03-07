@@ -14,6 +14,7 @@ import java.util.HashSet;
 @NoArgsConstructor
 @AllArgsConstructor
 public class IngredientResponseDto {
+    private String ingredientName;
     private String pizzaName;
     private String pizzaDescription;
     private Size size;
