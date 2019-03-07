@@ -5,11 +5,13 @@ import dominos.demo.model.DTOs.IngredientResponseDto;
 import dominos.demo.model.DTOs.PizzaResponseDto;
 import dominos.demo.model.daos.IngredientDao;
 import dominos.demo.model.daos.PizzaDao;
+import dominos.demo.model.daos.ProductDao;
 import dominos.demo.model.enums.Size;
 import dominos.demo.model.products.Ingredient;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.util.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -23,7 +25,13 @@ public class PizzaController extends BaseController{
     PizzaDao pizzaDao;
 
     @Autowired
+    ProductDao productDao;
+
+    @Autowired
     IngredientDao ingredientDao;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public static final double MIN_QUANTITY = 0;
     public static final double MAX_QUANTITY = 100;
@@ -91,7 +99,7 @@ public class PizzaController extends BaseController{
 
     @PutMapping(value = ("/pizzas/{id}/quantity/{quantity}"))
     public CommonResponseDTO updatePizzaQuantity(@PathVariable("id") long id, @PathVariable("quantity") int quantity, HttpSession session) throws BaseException {
-       // SessionManager.validateLoginAdmin(session);
+        SessionManager.validateLoginAdmin(session);
         if (quantity >= MIN_QUANTITY && quantity <= MAX_QUANTITY) {
             pizzaDao.changePizzaQuantity(id, quantity);
         }
@@ -101,21 +109,17 @@ public class PizzaController extends BaseController{
         return new CommonResponseDTO("Pizza with id: " + id + " has quantity : " + quantity + " ." , LocalDateTime.now());
     }
 
-    //ADD INGREDIENTS TO PIZZA
-   // @PostMapping(value = "/pizzas/{pizza_id}/ingredients/{ingredient_id}")
    @PostMapping(value = "/pizza/ingredients/{ingredient_id}")
-   public IngredientResponseDto setIngredientsToPizza(/*@PathVariable("pizza_id") long pizza_id*/ @PathVariable("ingredient_id") long ingredient_id, HttpSession session) throws BaseException {
-       //Pizza pizza = pizzaDao.getProductById(pizza_id);
+   public IngredientResponseDto setIngredientsToPizza( @PathVariable("ingredient_id") long ingredient_id, HttpSession session) throws BaseException {
        Pizza pizza = (Pizza) session.getAttribute(SessionManager.PIZZA);
        Ingredient ingredient = ingredientDao.getIngredientById(ingredient_id);
-       //session.setAttribute("ingredients", new HashMap<Pizza, HashSet<Ingredient>>());
        HashMap<Pizza, HashSet<Ingredient>> pizzaExtras =
                (HashMap<Pizza, HashSet<Ingredient>>) session.getAttribute(SessionManager.PIZZA_INGREDIENTS);
        HashSet<Ingredient> ingredients = pizzaExtras.get(pizza);
        if (!ingredients.contains(ingredient)) {
            pizzaExtras.get(pizza).add(ingredient);
        }
-       return new IngredientResponseDto(ingredient.getName(),pizza.getName(), pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
+       return new IngredientResponseDto(pizza.getName(), pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
                ingredients);
 
    }
@@ -129,8 +133,7 @@ public class PizzaController extends BaseController{
         if (ingredients.contains(ingredient)) {
             pizzaExtras.get(pizza).remove(ingredient);
         }
-
-        return new IngredientResponseDto(ingredient.getName(),pizza.getName(),
+        return new IngredientResponseDto(pizza.getName(),
                 pizza.getDescription(),pizza.getSize(),pizza.getWeight(),
                 ingredients);
 
@@ -153,7 +156,38 @@ public class PizzaController extends BaseController{
         return new PizzaResponseDto(pizza.getName(), pizza.getDescription(),
                 pizza.getSize(), pizza.getWeight(),pizza.getPrice());
     }
-
+    @PostMapping(value = "/pizzas/favourites")
+    public CommonResponseDTO addToFavourites(HttpSession session) throws InvalidLogInException{
+        if(SessionManager.isLoggedIn(session)) {
+            Pizza pizza = (Pizza) session.getAttribute(SessionManager.PIZZA);
+            HashMap<Pizza, HashSet<Ingredient>> pizzaExtras =
+                    (HashMap<Pizza, HashSet<Ingredient>>) session.getAttribute(SessionManager.PIZZA_INGREDIENTS);
+            long ingredientId;
+            if (pizzaExtras.containsKey(pizza)) {
+                if (pizzaExtras.get(pizza).size() == 0) {
+                    return new CommonResponseDTO("You can add to favourites only pizza with ingredients!",
+                            LocalDateTime.now());
+                }
+                for (Ingredient ingredient : pizzaExtras.get(pizza)) {
+                    ingredientId = ingredient.getId();
+                    jdbcTemplate.update("INSERT INTO pizza_ingredients(pizza_id, ingredient_id) VALUES(?,?)"
+                            , pizza.getId(), ingredientId);
+                }
+                return new CommonResponseDTO("You successfulyy added pizza " + pizza.getName() + " to favourites!"
+                        , LocalDateTime.now());
+            }
+            return new CommonResponseDTO("Select pizza first and then added it to your favourites! ",
+                    LocalDateTime.now());
+        }
+        throw new InvalidLogInException("You are not logged in!");
+    }
+    @GetMapping(value = "/pizzas/stats")
+    public List<IngredientResponseDto> showPizzaWithAddedIngredients(HttpSession session) throws InvalidLogInException{
+        if(SessionManager.isLoggedIn(session)) {
+            return productDao.showMyFavOrders();
+        }
+        throw new InvalidLogInException("Please log in to view all your orders!");
+    }
     private void validatePizzaInput(Pizza pizza)throws InvalidInputException {
         if(pizza.getName() == null || pizza.getName().isEmpty()
                 || pizza.getDescription() == null || pizza.getDescription().isEmpty()
