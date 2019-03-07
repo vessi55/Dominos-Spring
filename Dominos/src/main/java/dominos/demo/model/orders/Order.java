@@ -27,8 +27,8 @@ public class Order {
     private long id;
     private double total_sum;
     private LocalDateTime order_time;
-    @JsonFormat(pattern = "THH:mm")
-    private LocalTime delivery_time;
+    //@JsonFormat(pattern = "THH:mm")
+    private LocalDateTime delivery_time;
     private String status;
     private String delivery_city;
     private String delivery_street;

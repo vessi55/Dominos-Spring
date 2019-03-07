@@ -90,10 +90,14 @@ public class ShoppingCartController extends BaseController{
         shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         if (!shoppingCart.isEmpty()) {
             if (shoppingCart.containsKey(product)) {
-                if(shoppingCart.get(product) == 1) {
+                if(shoppingCart.get(product) <= quantity) {
                     shoppingCart.remove(product);
+                    return;
                 }
                 shoppingCart.put(product, shoppingCart.get(product) - quantity);
+            }
+            else{
+                throw new ProductException("Product does not exist in your shopping cart!");
             }
         }
         else {

@@ -2,6 +2,7 @@ package dominos.demo.model.daos;
 
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.AddressResponseDTO;
+import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Ingredient;
@@ -48,56 +49,74 @@ public class ProductOrderDao {
         return price;
     }
 
-    public void orderProductFromRestaurant(long restaurant_id, HttpSession session, LocalTime delivery_time) {
+    public void orderProductFromRestaurant(long restaurant_id, HttpSession session) {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
-        double total_sum = calculatePrice(shoppingCart);
         Order order = new Order();
-        order.setTotal_sum(total_sum);
-        order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(delivery_time); // TODO: Find way to parse LocalDateTime to String
-        order.setStatus("Pending"); //TODO : Thread to changeStatus
-        order.setUser_id(user.getId());
-        order.setRestaurant_id(restaurant_id);
+        double total_sum = calculatePrice(shoppingCart);
+        setValuesForOrder(order, total_sum, user, restaurant_id);
         orderRepository.save(order);
-        for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
-            long productId = entry.getKey().getId();
-            Integer quantity = entry.getValue();
-            entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity);
-            SessionManager.SHOPPING_CART = null;
-        }
+        saveRecordsIntoTable(shoppingCart, order);
+        SessionManager.SHOPPING_CART = null;
     }
 
     public void orderPizzaToAddress(String city, String street, HttpSession session) throws BaseException {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
-        List<AddressResponseDTO> addresses = addressDao.getAllUserAddresses(user.getId());
-        System.out.println(addresses);
-        double total_sum = calculatePrice(shoppingCart);
         Order order = new Order();
-        order.setTotal_sum(total_sum);
-        order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(LocalTime.now().plusMinutes(15));
-        order.setStatus("Pending");
-        order.setUser_id(user.getId());
-        order.setRestaurant_id(null);
+        double total_sum = calculatePrice(shoppingCart);
+        setValuesForOrder(order, total_sum, user, null);
+        checkIfAddressExistForUser(user, order, city, street);
+        orderRepository.save(order);
+        createCooker(order);
+        saveRecordsIntoTable(shoppingCart,order);
+    }
+
+    public void checkIfAddressExistForUser(User user, Order order, String city, String street) throws InvalidAddressException {
+        List<AddressResponseDTO> addresses = addressDao.getAllUserAddresses(user.getId());
         for (AddressResponseDTO a : addresses) {
-            System.out.println(a.getCity());
-            System.out.println(a.getStreet());
             if (a.getCity().equals(city) && a.getStreet().equals(street)) {
                 order.setDelivery_city(city);
                 order.setDelivery_street(street);
             }
-//        }
-            if (order.getDelivery_city() == null && order.getDelivery_street() == null) {
-                throw new InvalidAddressException("Invalid address!");
+        }
+        if (order.getDelivery_city() == null && order.getDelivery_street() == null) {
+            throw new InvalidAddressException("Invalid address!");
+        }
+    }
+
+    public void createCooker(Order order) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(20000);
+                changeOrderStatus("Accepted", order.getId());
+                Thread.sleep(20000);
+                changeOrderStatus("Finished", order.getId());
+            }catch (InterruptedException e) {
+                System.out.println("Problem with your order! - " + e.getMessage());
             }
-            orderRepository.save(order);
-            for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
-                long productId = entry.getKey().getId();
-                Integer quantity = entry.getValue();
-                entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity);
-            }
+        }).start();
+    }
+
+    public void changeOrderStatus(String status, long id) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, status, id);
+    }
+
+    public void setValuesForOrder(Order order, double total_sum, User user, Long restaurant_id) {
+        order.setTotal_sum(total_sum);
+        order.setOrder_time(LocalDateTime.now());
+        order.setDelivery_time(LocalDateTime.now().plusMinutes(30));
+        order.setStatus("Pending");
+        order.setUser_id(user.getId());
+        order.setRestaurant_id(restaurant_id);
+    }
+
+    public void saveRecordsIntoTable(HashMap<Product, Integer> shoppingCart, Order order) {
+        for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
+            long productId = entry.getKey().getId();
+            Integer quantity = entry.getValue();
+            entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity);
         }
     }
 }

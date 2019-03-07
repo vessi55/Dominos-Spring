@@ -29,7 +29,7 @@ public class IngredientController extends BaseController {
         SessionManager.validateLoginAdmin(session);
         validateIngredientInput(ingredient);
         ingredientDao.addIngredient(ingredient);
-        return  new CommonResponseDTO("Product with name: " +
+        return  new CommonResponseDTO("Ingredient with name: " +
                 ingredient.getName() + " is successfully added" , LocalDateTime.now());
     }
 
@@ -45,7 +45,7 @@ public class IngredientController extends BaseController {
             return product;
         }
         else {
-            throw new ProductException("Product with id:" + id + " does not exist in database!");
+            throw new ProductException("Ingredient with id:" + id + " does not exist in database!");
         }
     }
 
@@ -53,7 +53,7 @@ public class IngredientController extends BaseController {
     public CommonResponseDTO deleteProduct(@PathVariable("id") long id, HttpSession session) throws BaseException {
         SessionManager.validateLoginAdmin(session);
         ingredientDao.deleteIngredientById(id);
-        return new CommonResponseDTO("Product with id: " + id + " was removed! : ", LocalDateTime.now());
+        return new CommonResponseDTO("Ingredient with id: " + id + " was removed! : ", LocalDateTime.now());
     }
 
     @PutMapping(value = ("/ingredients/{id}/quantity/{quantity}"))
@@ -65,14 +65,14 @@ public class IngredientController extends BaseController {
         else {
             throw new InvalidInputException("Quantity must be in interval : " + MIN_QUANTITY  +" - " + MAX_QUANTITY + " .");
         }
-        return new CommonResponseDTO("Product with id: " + id + " has quantity : " + quantity + " ." , LocalDateTime.now());
+        return new CommonResponseDTO("Ingredient with id: " + id + " has quantity : " + quantity + " ." , LocalDateTime.now());
     }
 
     @GetMapping(value = "/ingredients/filter/category")
     public List<Ingredient> filterByPrice(@RequestParam("category") IngredientCategory category) throws ProductException {
         List<Ingredient> ingredients = ingredientDao.getAllByIngredientCategory(category);
         if(ingredients.isEmpty()) {
-            throw new ProductException("No pizzas found by this name!");
+            throw new ProductException("No ingredient found by this name!");
         }
         return ingredients;
     }
@@ -82,7 +82,7 @@ public class IngredientController extends BaseController {
                 || ingredient.getIngredientCategory() == null || ingredient.getPrice() < 0 ){
             throw new
                     InvalidInputException(
-                    "Invalid input for the product.Please try again! All fields must be filled in!");
+                    "Invalid input for the ingredient.Please try again! All fields must be filled in!");
         }
     }
 }
