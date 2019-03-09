@@ -49,13 +49,13 @@ public class PizzaDao {
         return pizzaRepository.findById(aLong);
     }
 
-    public Pizza getProductById(long id){
+    public Pizza getProductById(long id) throws ProductException {
         Optional<Pizza> pizza = pizzaRepository.findById(id);
         if (pizza.isPresent()) {
             return pizza.get();
         }
         else {
-            return null;
+            throw new ProductException("Pizza with id: " + id + " does not exist in database!");
         }
     }
 
