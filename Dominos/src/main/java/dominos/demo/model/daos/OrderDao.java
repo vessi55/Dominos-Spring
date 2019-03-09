@@ -2,28 +2,20 @@ package dominos.demo.model.daos;
 
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.AddressResponseDTO;
-import dominos.demo.model.DTOs.CommonResponseDTO;
-import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
-import dominos.demo.model.products.Ingredient;
-import dominos.demo.model.products.NonPizza;
-import dominos.demo.model.products.Pizza;
 import dominos.demo.model.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidAddressException;
-import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Types;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -49,15 +41,16 @@ public class OrderDao {
         return price;
     }
 
-    public void orderProductFromRestaurant(long restaurant_id, HttpSession session) {
+    public void orderProductFromRestaurant(long restaurant_id, String delivery_time, HttpSession session) {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         Order order = new Order();
         double total_sum = calculatePrice(shoppingCart);
-        setValuesForOrder(order, total_sum, user, restaurant_id);
+        setValuesForOrder(order, convertStringToLDT(delivery_time), total_sum, user, restaurant_id);
         orderRepository.save(order);
+        createCooker(order);
         saveRecordsIntoTable(shoppingCart, order);
-        SessionManager.SHOPPING_CART = null;
+        session.setAttribute(SessionManager.SHOPPING_CART, null);
     }
 
     public void orderPizzaToAddress(String city, String street, HttpSession session) throws BaseException {
@@ -65,11 +58,12 @@ public class OrderDao {
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         Order order = new Order();
         double total_sum = calculatePrice(shoppingCart);
-        setValuesForOrder(order, total_sum, user, null);
+        setValuesForOrder(order,LocalDateTime.now().plusMinutes(30), total_sum, user, null);
         checkIfAddressExistForUser(user, order, city, street);
         orderRepository.save(order);
         createCooker(order);
         saveRecordsIntoTable(shoppingCart,order);
+        session.setAttribute(SessionManager.SHOPPING_CART, null);
     }
 
     public void checkIfAddressExistForUser(User user, Order order, String city, String street) throws InvalidAddressException {
@@ -103,10 +97,10 @@ public class OrderDao {
         jdbcTemplate.update(sql, status, id);
     }
 
-    public void setValuesForOrder(Order order, double total_sum, User user, Long restaurant_id) {
+    public void setValuesForOrder(Order order,LocalDateTime time, double total_sum, User user, Long restaurant_id) {
         order.setTotal_sum(total_sum);
         order.setOrder_time(LocalDateTime.now());
-        order.setDelivery_time(LocalDateTime.now().plusMinutes(30));
+        order.setDelivery_time(time);
         order.setStatus("Pending");
         order.setUser_id(user.getId());
         order.setRestaurant_id(restaurant_id);
@@ -118,5 +112,11 @@ public class OrderDao {
             Integer quantity = entry.getValue();
             entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity);
         }
+    }
+
+    private LocalDateTime convertStringToLDT(String time){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(time, formatter);
+        return dateTime;
     }
 }

@@ -4,7 +4,6 @@ import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.DTOs.ProductDTO;
 import dominos.demo.model.daos.OrderDao;
 import dominos.demo.model.daos.ProductDao;
-import dominos.demo.model.products.Product;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +24,16 @@ public class OrderController extends BaseController {
 
     @PostMapping(value ="/order/restaurants/id")
     public CommonResponseDTO finishOrderForPizzaFromRestaurant(@RequestParam ("id") Long restaurant_id,
-                                                               @RequestParam ("delivery_time")
-                                                                       LocalDateTime delivery_time, HttpSession session)
+                                                               @RequestParam ("delivery_time") String delTime,
+                                                               HttpSession session)
     throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            orderDao.orderProductFromRestaurant(restaurant_id, session);
+            orderDao.orderProductFromRestaurant(restaurant_id,delTime, session);
             return new CommonResponseDTO("Successfull order!", LocalDateTime.now());
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }
+
 
     @PostMapping(value ="/order/address/city/street")
     public CommonResponseDTO finishOrderForPizzaToAddress(@RequestParam  String city,
