@@ -12,13 +12,15 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class UserResponseDTO {
+    private long user_id;
     private String firstName;
     private String lastName;
     private String email;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
 
-    public UserResponseDTO(String firstName, String lastName, String email, LocalDateTime date) {
+    public UserResponseDTO(long id,String firstName, String lastName, String email, LocalDateTime date) {
+        this.user_id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

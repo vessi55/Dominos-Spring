@@ -4,6 +4,7 @@ import dominos.demo.controller.UserController;
 import dominos.demo.model.DTOs.UserEditDTO;
 import dominos.demo.model.repositories.UserRepository;
 import dominos.demo.model.users.User;
+import dominos.demo.util.BCryptUtil;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Component
 public class UserDao {
 
-    private static final String EDIT_USER = "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE id = ?";
+    private static final String EDIT_USER = "UPDATE users SET first_name = ?, last_name = ?, password = ? WHERE id = ?";
 
     @Autowired
     private UserRepository userRepository;
@@ -32,10 +33,9 @@ public class UserDao {
 
     public void updateUser(@RequestBody UserEditDTO editUser, User user) throws BaseException {
         validName(editUser);
-        validEmail(editUser);
         validPassword(editUser, user);
         jdbcTemplate.update(EDIT_USER, editUser.getNewFirstName(), editUser.getNewLastName(),
-                editUser.getNewEmail(), editUser.getNewPassword(), user.getId());
+                BCryptUtil.hashPassword(editUser.getNewPassword()), user.getId());
 
     }
 
@@ -47,17 +47,8 @@ public class UserDao {
         throw new InvalidLogInException("Empty First name OR Last name");
     }
 
-    public boolean validEmail(UserEditDTO editUser) throws BaseException {
-        if(!editUser.getNewEmail().isEmpty() || editUser.getNewEmail() != "") {
-            if (UserController.validEmailAddress(editUser.getNewEmail())) {
-                return true;
-            }
-        }
-        throw new InvalidLogInException("Invalid email!");
-    }
-
     public boolean validPassword(UserEditDTO editUser, User user) throws BaseException {
-        if (editUser.getCurrentPassword().equals(user.getPassword())) {
+        if(BCryptUtil.checkPass(editUser.getCurrentPassword(),user.getPassword())){
             if(editUser.getNewPassword().equals(editUser.getRepeatPassword())) {
                 UserController.validPassword(editUser.getNewPassword());
                 return true;

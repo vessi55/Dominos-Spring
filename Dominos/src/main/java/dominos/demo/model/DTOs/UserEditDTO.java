@@ -13,7 +13,6 @@ public class UserEditDTO {
 
     private String newFirstName;
     private String newLastName;
-    private String newEmail;
     private String currentPassword;
     private String newPassword;
     private String repeatPassword;

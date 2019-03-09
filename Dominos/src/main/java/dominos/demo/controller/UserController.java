@@ -1,6 +1,5 @@
 package dominos.demo.controller;
 
-
 import dominos.demo.model.DTOs.*;
 import dominos.demo.model.daos.UserDao;
 import dominos.demo.model.repositories.UserRepository;
@@ -12,17 +11,15 @@ import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.InvalidRegistrationException;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
 public class UserController extends BaseController {
-
-    public static final String LOGGED = "loggedIn";
 
     @Autowired
     private UserDao userDao;
@@ -40,26 +37,27 @@ public class UserController extends BaseController {
             user.setEmail(regUser.getEmail());
             user.setPassword(BCryptUtil.hashPassword(regUser.getPassword()));
             userRepository.save(user);
-            //SessionManager.logUser(session,user);
+            SessionManager.logUser(session,user);
         }
-        return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
+        return new UserResponseDTO(user.getId(),user.getFirst_name(), user.getLast_name(),
                 user.getEmail(), LocalDateTime.now());
     }
 
     @PostMapping(value = "/login")
     public UserResponseDTO loginUser(@RequestBody UserLogInDTO login, HttpSession session) throws InvalidLogInException {
-        if(!(SessionManager.isLoggedIn(session))&& validateLogIn(login)){
+            validateLogIn(login);
             String email = login.getEmail();
             String password = login.getPassword();
             User user = userDao.getUserByEmail(email);
-            if(user == null || !BCryptUtil.checkPass(password,user.getPassword())){
+            if(user == null){
                 throw new InvalidLogInException("User with this email does not exist!");
             }
+            else if(!BCryptUtil.checkPass(password,user.getPassword())){
+                throw new InvalidLogInException("Wrong password!");
+            }
             SessionManager.logUser(session, user);
-            return new UserResponseDTO(user.getFirst_name(), user.getLast_name(),
+            return new UserResponseDTO(user.getId(),user.getFirst_name(), user.getLast_name(),
                     user.getEmail(), LocalDateTime.now());
-        }
-        throw new InvalidLogInException("You are already logged in!");
     }
 
     @PostMapping(value = "/logout")
@@ -72,11 +70,12 @@ public class UserController extends BaseController {
     }
 
     @PutMapping(value = "/editProfile")
-    public CommonResponseDTO editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
+    public UserResponseDTO editProfile(@RequestBody UserEditDTO editUser, HttpSession session) throws Exception {
         if(SessionManager.isLoggedIn(session)) {
             User user = (User) session.getAttribute(SessionManager.LOGGED);
             userDao.updateUser(editUser, user);
-            return new CommonResponseDTO("User successfully updated! ", LocalDateTime.now());
+            return new UserResponseDTO(user.getId(),editUser.getNewFirstName(), editUser.getNewLastName(), user.getEmail(),
+                    LocalDateTime.now());
         }
         throw new InvalidLogInException("Please log in to edit your profile!");
     }
@@ -104,7 +103,7 @@ public class UserController extends BaseController {
 
     @PutMapping(value = "/users/{id}/setAdmin")
     public CommonResponseDTO setAdmin(@PathVariable ("id") long id, HttpSession session) {
-        User user = (User) session.getAttribute(SessionManager.LOGGED);
+        User user = userRepository.findById(id);
         user.setAdmin(true);
         userRepository.save(user);
         return new CommonResponseDTO("ADMIN SUCCESSFULL!", LocalDateTime.now());
@@ -167,20 +166,15 @@ $                 # end-of-string
 
     public static boolean validEmailAddress(String email) throws InvalidRegistrationException {
         //String regex = "^(.+)@(.+)$";
-        /*
- [A-Z0-9._%+-]+ - the first part of mail address may contain all characters, numbers, points, underscores, percent, plus and minus.
-@ - the @ character is mandatory
-[A-Z0-9.-]+ - the second part of mail address may contain all characters, numbers, points, underscores.
-\. - the point is mandatory
-[A-Z]{2,4} - the domain name may contain all characters. The number of characters is limited between 2 and 4.
-        */
-
-        String regex = "^(.+)@(.+)$";
+        // \w - letters, digits and _
+        //\b means "word boundary"
+        String regex = "\\b[\\w.-]+@[-.\\w]+\\.[A-Za-z]{2,4}\\b";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         if(!matcher.matches()) {
             throw new InvalidRegistrationException("Invalid email address!");
         }
         return true;
+
     }
 }
