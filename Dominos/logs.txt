@@ -1,1 +1,1 @@
-2019-03-10 15:19:26 ERROR BaseController:29 - Please log in to continue
+2019-03-10 15:16:47 ERROR BaseController:29 - dominos.demo.util.exceptions.ErrorMsg@5759dcdc
