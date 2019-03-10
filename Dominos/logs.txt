@@ -1,1 +1,57 @@
 2019-03-10 15:19:26 ERROR BaseController:29 - Please log in to continue
+2019-03-10 16:03:27 ERROR BaseController:53 - 
+2019-03-10 16:04:12 ERROR BaseController:53 - 
+2019-03-10 16:04:19 ERROR BaseController:45 - Pizza with id: 3 does not exist in database!
+2019-03-10 16:04:43 ERROR BaseController:45 - Invalid address!
+2019-03-10 16:05:16 ERROR BaseController:45 - Invalid address!
+2019-03-10 16:05:20 ERROR BaseController:45 - Invalid address!
+2019-03-10 16:05:48 ERROR BaseController:53 - PreparedStatementCallback; bad SQL grammar [(SELECT p.name, po.quantity, po.price, order_time, total_sum, orders.id 
+FROM users RIGHT JOIN orders 
+ON users.id = orders.user_id 
+JOIN pizza_orders AS po 
+ON orders.id = po.order_id
+JOIN pizzas AS p
+ON p.id = po.pizza_id
+WHERE users.id = ?
+UNION
+SELECT np.name, npo.quantity, npo.price, order_time, total_sum, orders.id 
+FROM users RIGHT JOIN orders 
+ON users.id = orders.user_id
+JOIN non_pizza_orders AS npo
+ON orders.id = npo.order_id
+JOIN non_pizzas AS np
+ON np.id = npo.non_pizza_id
+WHERE users.id = ?)
+ORDER BY id]; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION
+SELECT np.name, npo.quantity, npo.price, order_time, total_sum, orders.id ' at line 9
+2019-03-10 16:06:00 ERROR BaseController:141 - Couldn't connect to host, port: smtp.gmail.com, 587; timeout -1
+2019-03-10 16:06:07 ERROR BaseController:53 - PreparedStatementCallback; bad SQL grammar [(SELECT p.name, po.quantity, po.price, order_time, total_sum, orders.id 
+FROM users RIGHT JOIN orders 
+ON users.id = orders.user_id 
+JOIN pizza_orders AS po 
+ON orders.id = po.order_id
+JOIN pizzas AS p
+ON p.id = po.pizza_id
+WHERE users.id = ?
+UNION
+SELECT np.name, npo.quantity, npo.price, order_time, total_sum, orders.id 
+FROM users RIGHT JOIN orders 
+ON users.id = orders.user_id
+JOIN non_pizza_orders AS npo
+ON orders.id = npo.order_id
+JOIN non_pizzas AS np
+ON np.id = npo.non_pizza_id
+WHERE users.id = ?)
+ORDER BY id]; nested exception is java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'UNION
+SELECT np.name, npo.quantity, npo.price, order_time, total_sum, orders.id ' at line 9
+2019-03-10 16:09:06 ERROR BaseController:141 - Couldn't connect to host, port: smtp.gmail.com, 587; timeout -1
+2019-03-10 16:10:28 ERROR BaseController:53 - 
+2019-03-10 16:10:37 ERROR BaseController:45 - Your shopping cart is empty!
+2019-03-10 16:10:58 ERROR BaseController:141 - 535-5.7.8 Username and Password not accepted. Learn more at
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials p16sm10159275wro.25 - gsmtp
+
+2019-03-10 16:12:38 ERROR BaseController:141 - 535-5.7.8 Username and Password not accepted. Learn more at
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials m15sm2803803wrx.30 - gsmtp
+
+2019-03-10 16:21:28 ERROR BaseController:141 - Couldn't connect to host, port: smtp.gmail.com, 587; timeout -1
+2019-03-10 16:26:04 ERROR BaseController:53 - 
