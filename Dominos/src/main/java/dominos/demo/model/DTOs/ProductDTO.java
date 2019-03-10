@@ -1,7 +1,5 @@
 package dominos.demo.model.DTOs;
 
-import dominos.demo.model.enums.NonPizzaCategory;
-import dominos.demo.model.enums.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +14,8 @@ import java.time.LocalDateTime;
 public class ProductDTO {
 
     private String name;
+    private int quantity;
     private double price;
     private LocalDateTime order_time;
+    private double total_sum;
 }

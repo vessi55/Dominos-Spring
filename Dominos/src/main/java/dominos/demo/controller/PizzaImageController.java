@@ -1,11 +1,9 @@
 package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
-import dominos.demo.model.DTOs.ImageDTO;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.products.Pizza;
 import dominos.demo.model.repositories.PizzaRepository;
-import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 @RestController
 public class PizzaImageController extends BaseController{

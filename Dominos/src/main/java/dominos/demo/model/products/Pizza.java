@@ -53,8 +53,8 @@ public class Pizza extends Product{
     }
 
     @Override
-    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long order_id, int quantity) {
-        jdbcTemplate.update("INSERT INTO pizza_orders (pizza_id, order_id, quantity) VALUES (?,?,?)",
-                productId, order_id, quantity);
+    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long order_id, int quantity, double price) {
+        jdbcTemplate.update("INSERT INTO pizza_orders (pizza_id, order_id, quantity, price) VALUES (?,?,?,?)",
+                productId, order_id, quantity, price);
     }
 }

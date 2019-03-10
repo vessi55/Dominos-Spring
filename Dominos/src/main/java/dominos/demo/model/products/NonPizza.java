@@ -44,9 +44,9 @@ public class NonPizza extends Product{
         return Objects.hash(id, name, category, price, measure, image_url);
     }
     @Override
-    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long order_id, int quantity) {
-        jdbcTemplate.update("INSERT INTO non_pizza_orders (non_pizza_id, order_id, quantity) VALUES (?,?,?)",
-                productId, order_id, quantity);
+    public void insertIntoTable(JdbcTemplate jdbcTemplate, long productId, long order_id, int quantity, double price) {
+        jdbcTemplate.update("INSERT INTO non_pizza_orders (non_pizza_id, order_id, quantity, price) VALUES (?,?,?,?)",
+                productId, order_id, quantity, price);
     }
 }
 

@@ -2,6 +2,7 @@ package dominos.demo.model.daos;
 
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.AddressResponseDTO;
+import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
@@ -41,7 +42,7 @@ public class OrderDao {
         return price;
     }
 
-    public void orderProductFromRestaurant(long restaurant_id, String delivery_time, HttpSession session) {
+    public OrderDto orderProductFromRestaurant(long restaurant_id, String delivery_time, HttpSession session) {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         Order order = new Order();
@@ -51,9 +52,11 @@ public class OrderDao {
         createCooker(order);
         saveRecordsIntoTable(shoppingCart, order);
         session.setAttribute(SessionManager.SHOPPING_CART, null);
+        return new OrderDto(order.getTotal_sum(), order.getOrder_time(), order.getDelivery_time(), order.getStatus(),
+                order.getDelivery_city(), order.getDelivery_street());
     }
 
-    public void orderPizzaToAddress(String city, String street, HttpSession session) throws BaseException {
+    public OrderDto orderPizzaToAddress(String city, String street, HttpSession session) throws BaseException {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         Order order = new Order();
@@ -64,6 +67,8 @@ public class OrderDao {
         createCooker(order);
         saveRecordsIntoTable(shoppingCart,order);
         session.setAttribute(SessionManager.SHOPPING_CART, null);
+        return new OrderDto(order.getTotal_sum(), order.getOrder_time(), order.getDelivery_time(), order.getStatus(),
+                order.getDelivery_city(), order.getDelivery_street());
     }
 
     public void checkIfAddressExistForUser(User user, Order order, String city, String street) throws InvalidAddressException {
@@ -110,7 +115,8 @@ public class OrderDao {
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
             long productId = entry.getKey().getId();
             Integer quantity = entry.getValue();
-            entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity);
+            double price = entry.getKey().getPrice();
+            entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity, price);
         }
     }
 
