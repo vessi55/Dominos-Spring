@@ -1,6 +1,5 @@
 package dominos.demo.controller;
 import dominos.demo.model.users.User;
-import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 
 import javax.servlet.http.HttpSession;
@@ -24,7 +23,7 @@ public class SessionManager {
         session.setAttribute(LOGGED, user);
     }
 
-    protected static boolean validateLoginAdmin(HttpSession session)throws BaseException {
+    protected static boolean validateLoginAdmin(HttpSession session)throws InvalidLogInException {
         if(!isLoggedIn(session)) {
             throw new InvalidLogInException("You are not logged!");
         }

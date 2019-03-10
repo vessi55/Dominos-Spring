@@ -34,13 +34,11 @@ public class OrderController extends BaseController {
     }
 
 
-    @PostMapping(value ="/order/address/city/street")
-    public OrderDto finishOrderForPizzaToAddress(@RequestParam  String city,
-                                                 @RequestParam String street,
-                                                 HttpSession session)
+    @PostMapping(value ="/order/addresses/{id}")
+    public OrderDto finishOrderForPizzaToAddress(@PathVariable("id") long id, HttpSession session)
             throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
-            return orderDao.orderPizzaToAddress(city, street, session);
+            return orderDao.orderPizzaToAddress(id, session);
         }
         throw new InvalidLogInException("You are not logged in! Please log in to continue!");
     }

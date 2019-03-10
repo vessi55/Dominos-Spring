@@ -1,11 +1,11 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.controller.SessionManager;
-import dominos.demo.model.DTOs.AddressResponseDTO;
 import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
 import dominos.demo.model.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
+import dominos.demo.model.users.Address;
 import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidAddressException;
@@ -56,13 +56,13 @@ public class OrderDao {
                 order.getDelivery_city(), order.getDelivery_street());
     }
 
-    public OrderDto orderPizzaToAddress(String city, String street, HttpSession session) throws BaseException {
+    public OrderDto orderPizzaToAddress(long adrressId, HttpSession session) throws BaseException {
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SessionManager.SHOPPING_CART);
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         Order order = new Order();
         double total_sum = calculatePrice(shoppingCart);
         setValuesForOrder(order,LocalDateTime.now().plusMinutes(30), total_sum, user, null);
-        checkIfAddressExistForUser(user, order, city, street);
+        checkIfAddressExistForUser(user, order,adrressId);
         orderRepository.save(order);
         createCooker(order);
         saveRecordsIntoTable(shoppingCart,order);
@@ -71,13 +71,15 @@ public class OrderDao {
                 order.getDelivery_city(), order.getDelivery_street());
     }
 
-    public void checkIfAddressExistForUser(User user, Order order, String city, String street) throws InvalidAddressException {
-        List<AddressResponseDTO> addresses = addressDao.getAllUserAddresses(user.getId());
-        for (AddressResponseDTO a : addresses) {
-            if (a.getCity().equals(city) && a.getStreet().equals(street)) {
-                order.setDelivery_city(city);
-                order.setDelivery_street(street);
-            }
+    public void checkIfAddressExistForUser(User user, Order order,long adrressId) throws InvalidAddressException {
+        List<Address> addresses = addressDao.getAddressesByUserId(user.getId());
+        for (Address a : addresses){
+            if(a.getId() == adrressId){
+                order.setDelivery_street(a.getStreet());
+                order.setDelivery_city(a.getCity());
+                System.out.println(order.getDelivery_city());
+                System.out.println(order.getDelivery_street());
+           }
         }
         if (order.getDelivery_city() == null && order.getDelivery_street() == null) {
             throw new InvalidAddressException("Invalid address!");
