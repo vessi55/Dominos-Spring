@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 public class SessionManager {
 
     public static final String LOGGED = "logged";
-    public static  String SHOPPING_CART = "cart";
+    public static final String SHOPPING_CART = "cart";
     public static final String PIZZA = "pizza";
     public static final String PIZZA_INGREDIENTS = "ingredients";
 
