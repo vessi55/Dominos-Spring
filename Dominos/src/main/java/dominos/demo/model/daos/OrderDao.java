@@ -1,5 +1,6 @@
 package dominos.demo.model.daos;
 
+import dominos.demo.controller.BaseController;
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.OrderDto;
 import dominos.demo.model.orders.Order;
@@ -7,6 +8,7 @@ import dominos.demo.model.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.users.Address;
 import dominos.demo.model.users.User;
+import dominos.demo.util.MailUtil;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidAddressException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,7 @@ public class OrderDao {
         createCooker(order);
         saveRecordsIntoTable(shoppingCart, order);
         session.setAttribute(SessionManager.SHOPPING_CART, null);
+        new Thread(()->{sendingMail(order,user);}).start();
         return new OrderDto(order.getTotal_sum(), order.getOrder_time(), order.getDelivery_time(), order.getStatus(),
                 order.getDelivery_city(), order.getDelivery_street());
     }
@@ -67,6 +70,7 @@ public class OrderDao {
         createCooker(order);
         saveRecordsIntoTable(shoppingCart,order);
         session.setAttribute(SessionManager.SHOPPING_CART, null);
+        new Thread(()->{sendingMail(order,user);}).start();
         return new OrderDto(order.getTotal_sum(), order.getOrder_time(), order.getDelivery_time(), order.getStatus(),
                 order.getDelivery_city(), order.getDelivery_street());
     }
@@ -120,6 +124,19 @@ public class OrderDao {
             double price = entry.getKey().getPrice();
             entry.getKey().insertIntoTable(jdbcTemplate, productId, order.getId(), quantity, price);
         }
+    }
+
+    public void sendingMail(Order order, User user){
+            try {
+                MailUtil.sendMail("Dominos - Order",
+                        "===== Order Information ===== " +
+                                "\nOrder time : " + order.getOrder_time() +
+                                "\nDelivery time : " + order.getDelivery_time() +
+                                "\nSum : " + order.getTotal_sum() +  " lv.",
+                        user.getEmail());
+            } catch (Exception e) {
+                BaseController.logger.error(e.getMessage());
+            }
     }
 
     private LocalDateTime convertStringToLDT(String time){
