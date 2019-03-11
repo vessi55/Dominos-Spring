@@ -1,10 +1,8 @@
 package dominos.demo.model.repositories;
 
-import dominos.demo.model.products.Pizza;
-import dominos.demo.model.restaurants.Restaurant;
+import dominos.demo.model.pojos.restaurants.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 

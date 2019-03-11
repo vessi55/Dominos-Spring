@@ -1,8 +1,8 @@
 package dominos.demo.controller;
 import dominos.demo.model.DTOs.AddressResponseDTO;
 import dominos.demo.model.daos.AddressDao;
-import dominos.demo.model.users.Address;
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.Address;
+import dominos.demo.model.pojos.users.User;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidAddressException;
 import dominos.demo.util.exceptions.InvalidLogInException;
@@ -42,7 +42,7 @@ public class AddressController extends BaseController {
     }
 
     @GetMapping(value = "/users/myAddresses")
-    public List<Address> getAddressesOfUser( Address address, HttpSession session) throws BaseException {
+    public List<Address> getAddressesOfUser(HttpSession session) throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
             User user = (User) session.getAttribute(SessionManager.LOGGED);
             return addressDao.getAddressesByUserId(user.getId());

@@ -1,1 +1,19 @@
 2019-03-10 15:16:47 ERROR BaseController:29 - dominos.demo.util.exceptions.ErrorMsg@5759dcdc
+2019-03-10 18:38:16 ERROR BaseController:29 - You are already logged out
+2019-03-10 18:42:04 ERROR BaseController:45 - You have no orders yet!
+2019-03-10 18:49:00 ERROR BaseController:29 - Please log in to delete your profile!
+2019-03-10 18:54:54 ERROR BaseController:45 - Pizza with id:18 does not exist in database!
+2019-03-10 18:55:06 ERROR BaseController:45 - Pizza with name: NewYorkand size: JUMBO does not exist in database!
+2019-03-10 18:55:15 ERROR BaseController:45 - Pizza with name: NewYorkand size: MEDIUM does not exist in database!
+2019-03-10 18:55:27 ERROR BaseController:45 - Pizza with name: Polloand size: JUMBO does not exist in database!
+2019-03-10 18:55:35 ERROR BaseController:53 - query did not return a unique result: 2; nested exception is javax.persistence.NonUniqueResultException: query did not return a unique result: 2
+2019-03-10 18:58:39 ERROR BaseController:45 - Your shopping cart is empty!
+2019-03-10 19:04:11 ERROR BaseController:45 - Your shopping cart is empty!
+2019-03-11 12:36:42 ERROR BaseController:29 - Please log in to view all restaurants!
+2019-03-11 12:36:49 ERROR BaseController:29 - User with this email does not exist!
+2019-03-11 12:36:59 ERROR BaseController:29 - Please log in to view all restaurants!
+2019-03-11 12:37:24 ERROR BaseController:53 - Incorrect column count: expected 1, actual 2
+2019-03-11 12:42:51 ERROR BaseController:29 - Please log in to view all restaurants!
+2019-03-11 12:43:08 ERROR BaseController:29 - Please log in to view all restaurants!
+2019-03-11 13:00:20 ERROR BaseController:45 - No restaurants in city: Nesebar
+2019-03-11 13:01:59 ERROR BaseController:53 - Required String parameter 'city' is not present

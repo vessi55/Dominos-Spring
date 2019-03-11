@@ -2,7 +2,7 @@ package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.PizzaDao;
-import dominos.demo.model.products.Pizza;
+import dominos.demo.model.pojos.products.Pizza;
 import dominos.demo.model.repositories.PizzaRepository;
 import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;

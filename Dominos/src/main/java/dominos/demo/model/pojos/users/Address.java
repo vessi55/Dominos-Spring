@@ -1,4 +1,4 @@
-package dominos.demo.model.users;
+package dominos.demo.model.pojos.users;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

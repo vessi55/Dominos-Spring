@@ -1,6 +1,6 @@
 package dominos.demo.model.repositories;
 
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

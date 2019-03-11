@@ -1,6 +1,6 @@
-package dominos.demo.model.users;
+package dominos.demo.model.pojos.users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dominos.demo.model.orders.Order;
+import dominos.demo.model.pojos.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

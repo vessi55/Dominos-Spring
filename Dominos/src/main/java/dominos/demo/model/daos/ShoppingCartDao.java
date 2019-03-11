@@ -1,26 +1,18 @@
 package dominos.demo.model.daos;
 
-import dominos.demo.controller.SessionManager;
-import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.DTOs.ShoppingCartViewDto;
-import dominos.demo.model.orders.Order;
-import dominos.demo.model.products.Pizza;
-import dominos.demo.model.products.Product;
+import dominos.demo.model.pojos.products.Pizza;
+import dominos.demo.model.pojos.products.Product;
 import dominos.demo.model.repositories.OrderRepository;
 import dominos.demo.model.repositories.PizzaRepository;
-import dominos.demo.model.users.User;
 import dominos.demo.util.exceptions.BaseException;
+import dominos.demo.util.exceptions.EmptyShoppingCartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpSession;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +40,7 @@ public class ShoppingCartDao {
         }
     }
 
-    public List<ShoppingCartViewDto> viewShoppingCart(HttpSession session) {
+    public List<ShoppingCartViewDto> viewShoppingCart(HttpSession session) throws EmptyShoppingCartException {
         LinkedList<ShoppingCartViewDto> products = new LinkedList<>();
         HashMap<Product, Integer> shoppingCart = (HashMap<Product, Integer>) session.getAttribute(SHOPPING_CART);
         for (Map.Entry<Product, Integer> entry : shoppingCart.entrySet()) {
@@ -57,6 +49,9 @@ public class ShoppingCartDao {
             shoppingCartViewDto.setQuantity(entry.getValue());
             shoppingCartViewDto.setPrice(entry.getKey().getPrice()*entry.getValue());
             products.add(shoppingCartViewDto);
+        }
+        if(shoppingCart.isEmpty()) {
+            throw new EmptyShoppingCartException("Your shopping cart is empty!");
         }
         return products;
     }

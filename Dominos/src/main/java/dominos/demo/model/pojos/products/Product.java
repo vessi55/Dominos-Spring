@@ -1,4 +1,4 @@
-package dominos.demo.model.products;
+package dominos.demo.model.pojos.products;
 
 import lombok.Getter;
 import lombok.Setter;

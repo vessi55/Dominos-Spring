@@ -3,7 +3,8 @@ package dominos.demo.model.daos;
 import dominos.demo.controller.SessionManager;
 import dominos.demo.model.DTOs.IngredientResponseDto;
 import dominos.demo.model.DTOs.ProductDTO;
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.User;
+import dominos.demo.util.exceptions.ProductException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,25 +39,15 @@ public class ProductDao {
                     "WHERE users.id = ?)\n" +
                     "ORDER BY id";
 
-    private static final String STATS =
-            "SELECT p.name, p.description,p.size,p.weight,p.price, i.name, i.price\n" +
-                    "FROM pizzas as p \n" +
-                    "JOIN pizza_ingredients\n" +
-                    "ON p.id = pizza_ingredients.pizza_id\n" +
-                    "JOIN ingredients AS i\n" +
-                    "ON pizza_ingredients.ingredient_id = i.id;";
 
-    public List<ProductDTO> showMyOrders(HttpSession session) {
+    public List<ProductDTO> showMyOrders(HttpSession session) throws ProductException {
         User user = (User) session.getAttribute(SessionManager.LOGGED);
         long user_id = user.getId();
         List<ProductDTO> myorders = jdbcTemplate.query(MY_ORDERS,
                 new Object[]{user_id, user_id}, new BeanPropertyRowMapper<>(ProductDTO.class));
+        if(myorders.isEmpty()) {
+            throw new ProductException("You have no orders yet!");
+        }
         return myorders;
     }
-    public List<IngredientResponseDto> showMyFavOrders() {
-        List<IngredientResponseDto> myorders = jdbcTemplate.query(STATS,
-                new Object[]{}, new BeanPropertyRowMapper<>(IngredientResponseDto.class));
-        return myorders;
-    }
-
 }

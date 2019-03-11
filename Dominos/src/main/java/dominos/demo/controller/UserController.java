@@ -3,16 +3,13 @@ package dominos.demo.controller;
 import dominos.demo.model.DTOs.*;
 import dominos.demo.model.daos.UserDao;
 import dominos.demo.model.repositories.UserRepository;
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.User;
 import dominos.demo.util.BCryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;
 import dominos.demo.util.exceptions.InvalidRegistrationException;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
@@ -80,18 +77,13 @@ public class UserController extends BaseController {
         throw new InvalidLogInException("Please log in to edit your profile!");
     }
 
-    @DeleteMapping(value = "/deleteProfile/{id}")
-    public CommonResponseDTO deleteProfile(@PathVariable ("id") long idParam, HttpSession session) throws Exception {
+    @DeleteMapping(value = "/deleteProfile")
+    public CommonResponseDTO deleteProfile(HttpSession session) throws Exception {
         if(SessionManager.isLoggedIn(session)) {
             User user = (User) session.getAttribute(SessionManager.LOGGED);
-            if (user.getId() == idParam) {
-                userRepository.delete(user);
-                session.invalidate();
-                return new CommonResponseDTO("User successfully deleted! ", LocalDateTime.now());
-            }
-            else {
-                return new CommonResponseDTO("User with id : " + idParam + " does not exist!", LocalDateTime.now());
-            }
+            userRepository.delete(user);
+            session.invalidate();
+            return new CommonResponseDTO("Profile successfully deleted! ", LocalDateTime.now());
         }
         throw new InvalidLogInException("Please log in to delete your profile!");
     }

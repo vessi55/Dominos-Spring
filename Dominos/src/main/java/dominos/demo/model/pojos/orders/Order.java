@@ -1,4 +1,4 @@
-package dominos.demo.model.orders;
+package dominos.demo.model.pojos.orders;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

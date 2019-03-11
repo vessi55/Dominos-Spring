@@ -1,8 +1,8 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
-import dominos.demo.model.enums.IngredientCategory;
-import dominos.demo.model.products.Ingredient;
+import dominos.demo.model.pojos.enums.IngredientCategory;
+import dominos.demo.model.pojos.products.Ingredient;
 import dominos.demo.model.repositories.IngredientRepository;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;
@@ -37,13 +37,13 @@ public class IngredientDao {
         return ingredientRepository.findById(id);
     }
 
-    public Ingredient getIngredientById(long id){
+    public Ingredient getIngredientById(long id) throws ProductException{
         Optional<Ingredient> product = ingredientRepository.findById(id);
         if (product.isPresent()) {
             return product.get();
         }
         else {
-            return null;
+            throw new ProductException("Ingredient does not exist!");
         }
     }
 

@@ -2,7 +2,7 @@ package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.NonPizzaDao;
-import dominos.demo.model.products.NonPizza;
+import dominos.demo.model.pojos.products.NonPizza;
 import dominos.demo.model.repositories.NonPizzaRepository;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.ProductException;

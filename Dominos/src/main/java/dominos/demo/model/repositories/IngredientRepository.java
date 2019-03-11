@@ -1,8 +1,8 @@
 package dominos.demo.model.repositories;
 
 
-import dominos.demo.model.enums.IngredientCategory;
-import dominos.demo.model.products.Ingredient;
+import dominos.demo.model.pojos.enums.IngredientCategory;
+import dominos.demo.model.pojos.products.Ingredient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

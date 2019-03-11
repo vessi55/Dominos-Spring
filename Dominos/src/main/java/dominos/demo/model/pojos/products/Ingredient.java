@@ -1,11 +1,10 @@
-package dominos.demo.model.products;
+package dominos.demo.model.pojos.products;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import dominos.demo.model.enums.IngredientCategory;
+import dominos.demo.model.pojos.enums.IngredientCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.persistence.*;
 import java.util.Objects;

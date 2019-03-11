@@ -1,5 +1,5 @@
 package dominos.demo.controller;
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.User;
 import dominos.demo.util.exceptions.InvalidLogInException;
 
 import javax.servlet.http.HttpSession;

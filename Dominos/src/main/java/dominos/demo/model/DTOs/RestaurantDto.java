@@ -1,5 +1,6 @@
 package dominos.demo.model.DTOs;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,8 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ShoppingCartViewDto {
-    private String name;
-    private int quantity;
-    private double price;
+@AllArgsConstructor
+public class RestaurantDto {
+
+    private String city;
+    private String address;
 }

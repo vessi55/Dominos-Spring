@@ -1,6 +1,6 @@
-package dominos.demo.model.restaurants;
+package dominos.demo.model.pojos.restaurants;
 
-import dominos.demo.model.orders.Order;
+import dominos.demo.model.pojos.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class Restaurant {
     private String city;
     private String address;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "restaurant_id", orphanRemoval = true)
-    private Set<Order> myOrders = new HashSet<>();
+    private Set<Order> orders = new HashSet<>();
 
 
 

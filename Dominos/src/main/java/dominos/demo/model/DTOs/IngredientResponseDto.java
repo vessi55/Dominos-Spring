@@ -1,7 +1,7 @@
 package dominos.demo.model.DTOs;
 
-import dominos.demo.model.enums.Size;
-import dominos.demo.model.products.Ingredient;
+import dominos.demo.model.pojos.enums.Size;
+import dominos.demo.model.pojos.products.Ingredient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

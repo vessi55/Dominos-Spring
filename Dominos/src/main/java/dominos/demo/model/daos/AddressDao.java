@@ -1,7 +1,7 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.model.repositories.AddressRepository;
-import dominos.demo.model.users.Address;
+import dominos.demo.model.pojos.users.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

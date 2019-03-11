@@ -1,7 +1,7 @@
 package dominos.demo.model.repositories;
 
-import dominos.demo.model.enums.Size;
-import dominos.demo.model.products.Pizza;
+import dominos.demo.model.pojos.enums.Size;
+import dominos.demo.model.pojos.products.Pizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

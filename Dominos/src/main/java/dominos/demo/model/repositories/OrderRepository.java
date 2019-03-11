@@ -1,6 +1,6 @@
 package dominos.demo.model.repositories;
 
-import dominos.demo.model.orders.Order;
+import dominos.demo.model.pojos.orders.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

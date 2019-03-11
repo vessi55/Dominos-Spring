@@ -1,14 +1,11 @@
-package dominos.demo.model.products;
-import dominos.demo.model.enums.Size;
+package dominos.demo.model.pojos.products;
+import dominos.demo.model.pojos.enums.Size;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.persistence.*;

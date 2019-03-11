@@ -1,9 +1,8 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
-import dominos.demo.model.enums.NonPizzaCategory;
-import dominos.demo.model.products.NonPizza;
-import dominos.demo.model.products.Pizza;
+import dominos.demo.model.pojos.enums.NonPizzaCategory;
+import dominos.demo.model.pojos.products.NonPizza;
 import dominos.demo.model.repositories.NonPizzaRepository;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;

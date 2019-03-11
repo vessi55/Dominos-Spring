@@ -6,9 +6,9 @@ import dominos.demo.model.DTOs.PizzaResponseDto;
 import dominos.demo.model.daos.IngredientDao;
 import dominos.demo.model.daos.PizzaDao;
 import dominos.demo.model.daos.ProductDao;
-import dominos.demo.model.enums.Size;
-import dominos.demo.model.products.Ingredient;
-import dominos.demo.model.products.Pizza;
+import dominos.demo.model.pojos.enums.Size;
+import dominos.demo.model.pojos.products.Ingredient;
+import dominos.demo.model.pojos.products.Pizza;
 import dominos.demo.util.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -139,7 +139,6 @@ public class PizzaController extends BaseController{
 
     }
 
-    //VIEW PIZZA
     @GetMapping(value = "/pizzas/{id}")
     public PizzaResponseDto viewPizza(@PathVariable ("id") long id, HttpSession session) throws BaseException{
         Pizza pizza = pizzaDao.getProductById(id);
@@ -156,38 +155,7 @@ public class PizzaController extends BaseController{
         return new PizzaResponseDto(pizza.getName(), pizza.getDescription(),
                 pizza.getSize(), pizza.getWeight(),pizza.getPrice());
     }
-    @PostMapping(value = "/pizzas/favourites")
-    public CommonResponseDTO addToFavourites(HttpSession session) throws InvalidLogInException{
-        if(SessionManager.isLoggedIn(session)) {
-            Pizza pizza = (Pizza) session.getAttribute(SessionManager.PIZZA);
-            HashMap<Pizza, HashSet<Ingredient>> pizzaExtras =
-                    (HashMap<Pizza, HashSet<Ingredient>>) session.getAttribute(SessionManager.PIZZA_INGREDIENTS);
-            long ingredientId;
-            if (pizzaExtras.containsKey(pizza)) {
-                if (pizzaExtras.get(pizza).size() == 0) {
-                    return new CommonResponseDTO("You can add to favourites only pizza with ingredients!",
-                            LocalDateTime.now());
-                }
-                for (Ingredient ingredient : pizzaExtras.get(pizza)) {
-                    ingredientId = ingredient.getId();
-                    jdbcTemplate.update("INSERT INTO pizza_ingredients(pizza_id, ingredient_id) VALUES(?,?)"
-                            , pizza.getId(), ingredientId);
-                }
-                return new CommonResponseDTO("You successfulyy added pizza " + pizza.getName() + " to favourites!"
-                        , LocalDateTime.now());
-            }
-            return new CommonResponseDTO("Select pizza first and then added it to your favourites! ",
-                    LocalDateTime.now());
-        }
-        throw new InvalidLogInException("You are not logged in!");
-    }
-    @GetMapping(value = "/pizzas/stats")
-    public List<IngredientResponseDto> showPizzaWithAddedIngredients(HttpSession session) throws InvalidLogInException{
-        if(SessionManager.isLoggedIn(session)) {
-            return productDao.showMyFavOrders();
-        }
-        throw new InvalidLogInException("Please log in to view all your orders!");
-    }
+
     private void validatePizzaInput(Pizza pizza)throws InvalidInputException {
         if(pizza.getName() == null || pizza.getName().isEmpty()
                 || pizza.getDescription() == null || pizza.getDescription().isEmpty()

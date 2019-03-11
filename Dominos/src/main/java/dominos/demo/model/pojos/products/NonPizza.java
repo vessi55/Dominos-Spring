@@ -1,5 +1,5 @@
-package dominos.demo.model.products;
-import dominos.demo.model.enums.NonPizzaCategory;
+package dominos.demo.model.pojos.products;
+import dominos.demo.model.pojos.enums.NonPizzaCategory;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,7 +3,7 @@ package dominos.demo.model.daos;
 import dominos.demo.controller.UserController;
 import dominos.demo.model.DTOs.UserEditDTO;
 import dominos.demo.model.repositories.UserRepository;
-import dominos.demo.model.users.User;
+import dominos.demo.model.pojos.users.User;
 import dominos.demo.util.BCryptUtil;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidLogInException;

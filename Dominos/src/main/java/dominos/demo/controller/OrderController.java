@@ -44,7 +44,7 @@ public class OrderController extends BaseController {
     }
 
     @GetMapping(value = "/myOrders")
-    public List<ProductDTO> showMyOrders( HttpSession session) throws InvalidLogInException {
+    public List<ProductDTO> showMyOrders( HttpSession session) throws BaseException {
         if(SessionManager.isLoggedIn(session)) {
             return productDao.showMyOrders(session);
         }

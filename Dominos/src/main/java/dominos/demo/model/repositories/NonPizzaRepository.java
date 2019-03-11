@@ -1,7 +1,7 @@
 package dominos.demo.model.repositories;
 
-import dominos.demo.model.enums.NonPizzaCategory;
-import dominos.demo.model.products.NonPizza;
+import dominos.demo.model.pojos.enums.NonPizzaCategory;
+import dominos.demo.model.pojos.products.NonPizza;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -2,8 +2,8 @@ package dominos.demo.controller;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
 import dominos.demo.model.daos.IngredientDao;
-import dominos.demo.model.enums.IngredientCategory;
-import dominos.demo.model.products.Ingredient;
+import dominos.demo.model.pojos.enums.IngredientCategory;
+import dominos.demo.model.pojos.products.Ingredient;
 import dominos.demo.util.exceptions.BaseException;
 import dominos.demo.util.exceptions.InvalidInputException;
 import dominos.demo.util.exceptions.ProductException;

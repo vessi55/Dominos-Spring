@@ -1,22 +1,27 @@
 package dominos.demo.model.daos;
 
 import dominos.demo.model.DTOs.CommonResponseDTO;
-import dominos.demo.model.products.Pizza;
-import dominos.demo.model.repositories.PizzaRepository;
+import dominos.demo.model.DTOs.RestaurantDto;
+import dominos.demo.model.pojos.users.Address;
 import dominos.demo.model.repositories.RestaurantRepository;
-import dominos.demo.model.restaurants.Restaurant;
+import dominos.demo.model.pojos.restaurants.Restaurant;
 import dominos.demo.util.exceptions.InvalidInputException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
 public class RestaurantDao {
 
+    public static final String ALL_RESTAURANTS = "SELECT city, address FROM restaurants";
+    public static final String ALL_RESTAURANTS_IN_CITY = "SELECT city, address FROM restaurants WHERE city = ?";
     @Autowired
     RestaurantRepository restaurantRepository;
 
@@ -27,8 +32,22 @@ public class RestaurantDao {
         restaurantRepository.save(restaurant);
     }
 
+    public List<RestaurantDto> showAllRestaurants() {
+        List<RestaurantDto> restaurants  = jdbcTemplate.query(ALL_RESTAURANTS, new BeanPropertyRowMapper(RestaurantDto.class));
+        return restaurants;
+    }
+
     public List<Restaurant> getAll(){
         return restaurantRepository.findAll();
+    }
+
+    public List<RestaurantDto> showAllInCity(String city) throws InvalidInputException {
+        List<RestaurantDto> restaurants =  jdbcTemplate.query(ALL_RESTAURANTS_IN_CITY, new Object[]{city},
+                new BeanPropertyRowMapper<>(RestaurantDto.class));
+        if(restaurants.isEmpty()) {
+            throw new InvalidInputException("No restaurants in city: " + city);
+        }
+        return restaurants;
     }
 
     public List<Restaurant> getAllInCity(String city) {
